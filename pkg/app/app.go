@@ -1,8 +1,11 @@
 package app
 
 import (
+	"log"
+
 	"github.com/gin-gonic/gin"
 	"meteor-server/pkg/api"
+	"meteor-server/pkg/auth"
 	"meteor-server/pkg/core"
 	"meteor-server/pkg/db"
 )
@@ -24,7 +27,7 @@ func Main() {
 
 	api.UpdateCapes()
 
-	/*r := gin.Default()
+	r := gin.Default()
 	r.Static("/static", "static")
 
 	r.GET("/", indexHandler)
@@ -61,5 +64,5 @@ func Main() {
 		}
 	}
 
-	log.Fatal(r.Run())*/
+	log.Fatal(r.Run())
 }
