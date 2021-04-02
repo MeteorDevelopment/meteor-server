@@ -3,10 +3,10 @@ package db
 import "go.mongodb.org/mongo-driver/bson"
 
 type Global struct {
-	Downloads      int
-	TotalAccounts  int
-	SupportMessage int64
-	DevBuild       string
+	Downloads      int    `bson:"downloads"`
+	TotalAccounts  int    `bson:"totalAccounts"`
+	SupportMessage int64  `bson:"supportMessage"`
+	DevBuild       string `bson:"devBuild"`
 }
 
 func GetGlobal() Global {

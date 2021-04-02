@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"meteor-server/pkg/auth"
 	"meteor-server/pkg/db"
 )
@@ -30,4 +31,32 @@ func AccountInfoHandler(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, account)
+}
+
+func McAccountHandler(c *gin.Context) {
+	// Get Minecraft UUID
+	id, err := uuid.Parse(c.Param("uuid"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid UUID."})
+		return
+	}
+
+	// Get account
+	account, err := db.GetAccount(c)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Could not get account."})
+		return
+	}
+
+	if c.Request.Method == "POST" { // Add Minecraft account
+		err = account.AddMcAccount(id)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+	} else { // Remove Minecraft account
+		account.RemoveMcAccount(id)
+	}
+
+	c.JSON(http.StatusOK, gin.H{})
 }

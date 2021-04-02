@@ -1,6 +1,7 @@
 package db
 
 import (
+	"errors"
 	"log"
 
 	"github.com/gin-gonic/gin"
@@ -9,19 +10,19 @@ import (
 )
 
 type Account struct {
-	ID       string `json:"id"`
-	Email    string `json:"email"`
-	Username string `json:"username"`
-	Password string `json:"-"`
+	ID       string `bson:"id" json:"id"`
+	Email    string `bson:"email" json:"email"`
+	Username string `bson:"username" json:"username"`
+	Password string `bson:"password" json:"-"`
 
-	Donator   bool   `json:"donator"`
-	DiscordId string `json:"discordId"`
+	Donator   bool   `bson:"donator" json:"donator"`
+	DiscordId string `bson:"discordId" json:"discordId"`
 
-	MaxMcAccounts int         `json:"maxMcAccounts"`
-	McAccounts    []uuid.UUID `json:"mcAccounts"`
+	MaxMcAccounts int         `bson:"maxMcAccounts" json:"maxMcAccounts"`
+	McAccounts    []uuid.UUID `bson:"mcAccounts" json:"mcAccounts"`
 
-	Cape              string `json:"cape"`
-	CanHaveCustomCape bool   `json:"canHaveCustomCape"`
+	Cape              string `bson:"cape" json:"cape"`
+	CanHaveCustomCape bool   `bson:"canHaveCustomCape" json:"canHaveCustomCape"`
 }
 
 func GetAccount(c *gin.Context) (Account, error) {
@@ -55,4 +56,25 @@ func GetAccountWithUsernameOrEmail(name string) (Account, error) {
 	}
 
 	return acc, err
+}
+
+func (acc *Account) AddMcAccount(id uuid.UUID) error {
+	// Check maximum number of Minecraft accounts
+	if len(acc.McAccounts) >= acc.MaxMcAccounts {
+		return errors.New("Exceeded maximum number of Minecraft accounts.")
+	}
+
+	// Check for duplicate Minecraft accounts
+	for _, mcAccount := range acc.McAccounts {
+		if mcAccount == id {
+			return errors.New("Account already has that Minecraft account linked.")
+		}
+	}
+
+	accounts.UpdateOne(nil, bson.M{"id": acc.ID}, bson.M{"$push": bson.M{"mcAccounts": id.String()}})
+	return nil
+}
+
+func (acc *Account) RemoveMcAccount(id uuid.UUID) {
+	accounts.UpdateOne(nil, bson.M{"id": acc.ID}, bson.M{"$pull": bson.M{"mcAccounts": id.String()}})
 }

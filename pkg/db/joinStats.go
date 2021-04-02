@@ -5,10 +5,10 @@ import (
 )
 
 type JoinStats struct {
-	ID        string `json:"date"`
-	Joins     int    `json:"joins"`
-	Leaves    int    `json:"leaves"`
-	Downloads int    `json:"downloads"`
+	ID        string `bson:"id" json:"date"`
+	Joins     int    `bson:"joins" json:"joins"`
+	Leaves    int    `bson:"leaves" json:"leaves"`
+	Downloads int    `bson:"downloads" json:"downloads"`
 }
 
 func GetJoinStats(date string) (JoinStats, error) {

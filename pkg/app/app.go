@@ -1,11 +1,8 @@
 package app
 
 import (
-	"log"
-
 	"github.com/gin-gonic/gin"
 	"meteor-server/pkg/api"
-	"meteor-server/pkg/auth"
 	"meteor-server/pkg/core"
 	"meteor-server/pkg/db"
 )
@@ -27,7 +24,7 @@ func Main() {
 
 	api.UpdateCapes()
 
-	r := gin.Default()
+	/*r := gin.Default()
 	r.Static("/static", "static")
 
 	r.GET("/", indexHandler)
@@ -48,6 +45,8 @@ func Main() {
 			g2.GET("/login", api.LoginHandler)
 
 			g2.GET("/info", auth.Auth, api.AccountInfoHandler)
+			g2.POST("/mcAccount/:uuid", auth.Auth, api.McAccountHandler)
+			g2.DELETE("/mcAccount/:uuid", auth.Auth, api.McAccountHandler)
 			g2.POST("/logout", auth.Auth, api.LogoutHandler)
 		}
 
@@ -62,5 +61,5 @@ func Main() {
 		}
 	}
 
-	log.Fatal(r.Run())
+	log.Fatal(r.Run())*/
 }

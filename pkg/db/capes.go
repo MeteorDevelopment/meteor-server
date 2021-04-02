@@ -7,9 +7,9 @@ import (
 )
 
 type Cape struct {
-	ID             string
-	Url            string
-	SelfAssignable bool
+	ID             string `bson:"id"`
+	Url            string `bson:"url"`
+	SelfAssignable bool   `bson:"selfAssignable"`
 }
 
 func GetAllCapes() []Cape {
