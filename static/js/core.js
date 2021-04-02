@@ -7,7 +7,7 @@ function httpGet(url, callback) {
     http.open("GET", url)
     http.send()
 
-    http.onreadystatechange = ev => {
+    http.onreadystatechange = () => {
         if (http.readyState === 4 && http.status === 200) callback(JSON.parse(http.responseText))
     }
 }
