@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"meteor-server/pkg/auth"
+	"meteor-server/pkg/db"
 )
 
 func LoginHandler(c *gin.Context) {
@@ -19,4 +20,14 @@ func LoginHandler(c *gin.Context) {
 
 func LogoutHandler(c *gin.Context) {
 	auth.Logout(c.GetString("id"))
+}
+
+func AccountInfoHandler(c *gin.Context) {
+	account, err := db.GetAccount(c)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Could not get account."})
+		return
+	}
+
+	c.JSON(http.StatusOK, account)
 }

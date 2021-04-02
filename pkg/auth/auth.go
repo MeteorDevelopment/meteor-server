@@ -1,22 +1,21 @@
 package auth
 
 import (
+	"encoding/json"
 	"errors"
 	"sync"
 
-	"github.com/dgrijalva/jwt-go/v4"
+	jose "github.com/dvsekhvalnov/jose2go"
 	"meteor-server/pkg/db"
 )
 
 type Claims struct {
 	TokenID   int
 	AccountID string
-
-	jwt.StandardClaims
 }
 
 // TODO: Randomly generate the key on each startup
-var jwtKey = []byte("OMGF a key !!!?!?!?")
+var jwtKey = []byte{97,48,97,50,97,98,100,56,45,54,49,54,50,45,52,49,99,51,45,56,51,100,54,45,49,99,102,53,53,57,98,52,54,97,102,99}
 
 var tokenCount = 0
 var tokens = make(map[string]int)
@@ -38,17 +37,21 @@ func Login(name string, password string) (string, error) {
 
 	mu.Lock()
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, Claims{TokenID: tokenCount, AccountID: account.ID})
-	tokenStr, err := token.SignedString(jwtKey)
+	bytes, err := json.Marshal(Claims{TokenID: tokenCount, AccountID: account.ID})
 	if err != nil {
-		return "", errors.New("failed to generate token")
+		return "", err
+	}
+
+	token, err := jose.Sign(string(bytes), jose.HS256, jwtKey)
+	if err != nil {
+		return "", err
 	}
 
 	tokens[account.ID] = tokenCount
 	tokenCount++
 
 	mu.Unlock()
-	return tokenStr, nil
+	return token, nil
 }
 
 func Logout(accountId string) {
@@ -57,19 +60,24 @@ func Logout(accountId string) {
 	mu.Unlock()
 }
 
-func IsTokenValid(tokenStr string) (string, error) {
-	token, _ := jwt.ParseWithClaims(tokenStr, Claims{}, func(token *jwt.Token) (interface{}, error) {
-		return token, nil
-	})
+func IsTokenValid(token string) (string, error) {
+	bytes, _, err := jose.Decode(token, jwtKey)
+	if err != nil {
+		return "", err
+	}
 
-	if claims, ok := token.Claims.(*Claims); ok && token.Valid {
-		mu.RLock()
-		validTokenId, exists := tokens[claims.AccountID]
-		mu.RUnlock()
+	var claims Claims
+	err = json.Unmarshal([]byte(bytes), &claims)
+	if err != nil {
+		return "", err
+	}
 
-		if exists && claims.TokenID == validTokenId {
-			return claims.AccountID, nil
-		}
+	mu.RLock()
+	validTokenId, exists := tokens[claims.AccountID]
+	mu.RUnlock()
+
+	if exists && claims.TokenID == validTokenId {
+		return claims.AccountID, nil
 	}
 
 	return "", errors.New("invalid token")

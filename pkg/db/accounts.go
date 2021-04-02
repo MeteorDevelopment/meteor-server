@@ -3,24 +3,32 @@ package db
 import (
 	"log"
 
+	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
 type Account struct {
-	ID       string
-	Email    string
-	Username string
-	Password string
+	ID       string `json:"id"`
+	Email    string `json:"email"`
+	Username string `json:"username"`
+	Password string `json:"-"`
 
-	Donator   bool
-	DiscordId string
+	Donator   bool   `json:"donator"`
+	DiscordId string `json:"discordId"`
 
-	MaxMcAccounts int
-	McAccounts    []uuid.UUID
+	MaxMcAccounts int         `json:"maxMcAccounts"`
+	McAccounts    []uuid.UUID `json:"mcAccounts"`
 
-	Cape              string
-	CanHaveCustomCape bool
+	Cape              string `json:"cape"`
+	CanHaveCustomCape bool   `json:"canHaveCustomCape"`
+}
+
+func GetAccount(c *gin.Context) (Account, error) {
+	var acc Account
+	err := accounts.FindOne(nil, bson.M{"id": c.GetString("id")}).Decode(&acc)
+
+	return acc, err
 }
 
 func GetAccountsWithCape() []Account {
@@ -29,22 +37,22 @@ func GetAccountsWithCape() []Account {
 		log.Fatal(err)
 	}
 
-	var a []Account
-	err = cursor.All(nil, &a)
+	var acc []Account
+	err = cursor.All(nil, &acc)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	return a
+	return acc
 }
 
 func GetAccountWithUsernameOrEmail(name string) (Account, error) {
-	var a Account
-	err := accounts.FindOne(nil, bson.M{"username": name}).Decode(&a)
+	var acc Account
+	err := accounts.FindOne(nil, bson.M{"username": name}).Decode(&acc)
 
 	if err != nil {
-		err = accounts.FindOne(nil, bson.M{"email": name}).Decode(&a)
+		err = accounts.FindOne(nil, bson.M{"email": name}).Decode(&acc)
 	}
 
-	return a, err
+	return acc, err
 }

@@ -8,7 +8,7 @@ import (
 	"meteor-server/pkg/db"
 )
 
-var capes []byte
+var capes      []byte
 var capeOwners []byte
 
 func CapesHandler(c *gin.Context) {

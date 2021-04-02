@@ -47,6 +47,7 @@ func Main() {
 
 			g2.GET("/login", api.LoginHandler)
 
+			g2.GET("/info", auth.Auth, api.AccountInfoHandler)
 			g2.POST("/logout", auth.Auth, api.LogoutHandler)
 		}
 
