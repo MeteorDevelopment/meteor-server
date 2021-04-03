@@ -6,19 +6,20 @@ import (
 	"sync"
 
 	jose "github.com/dvsekhvalnov/jose2go"
+	"github.com/segmentio/ksuid"
 	"meteor-server/pkg/db"
 )
 
 type Claims struct {
 	TokenID   int
-	AccountID string
+	AccountID ksuid.KSUID
 }
 
 // TODO: Randomly generate the key on each startup
-var jwtKey = []byte{97,48,97,50,97,98,100,56,45,54,49,54,50,45,52,49,99,51,45,56,51,100,54,45,49,99,102,53,53,57,98,52,54,97,102,99}
+var jwtKey = []byte{97, 48, 97, 50, 97, 98, 100, 56, 45, 54, 49, 54, 50, 45, 52, 49, 99, 51, 45, 56, 51, 100, 54, 45, 49, 99, 102, 53, 53, 57, 98, 52, 54, 97, 102, 99}
 
 var tokenCount = 0
-var tokens = make(map[string]int)
+var tokens = make(map[ksuid.KSUID]int)
 var mu = sync.RWMutex{}
 
 func Login(name string, password string) (string, error) {
@@ -31,7 +32,7 @@ func Login(name string, password string) (string, error) {
 		return "", errors.New("wrong name or password")
 	}
 
-	if password != account.Password {
+	if !account.PasswordMatches(password) {
 		return "", errors.New("wrong name or password")
 	}
 
@@ -54,22 +55,22 @@ func Login(name string, password string) (string, error) {
 	return token, nil
 }
 
-func Logout(accountId string) {
+func Logout(id ksuid.KSUID) {
 	mu.Lock()
-	delete(tokens, accountId)
+	delete(tokens, id)
 	mu.Unlock()
 }
 
-func IsTokenValid(token string) (string, error) {
+func IsTokenValid(token string) (ksuid.KSUID, error) {
 	bytes, _, err := jose.Decode(token, jwtKey)
 	if err != nil {
-		return "", err
+		return ksuid.Nil, err
 	}
 
 	var claims Claims
 	err = json.Unmarshal([]byte(bytes), &claims)
 	if err != nil {
-		return "", err
+		return ksuid.Nil, err
 	}
 
 	mu.RLock()
@@ -80,5 +81,5 @@ func IsTokenValid(token string) (string, error) {
 		return claims.AccountID, nil
 	}
 
-	return "", errors.New("invalid token")
+	return ksuid.Nil, errors.New("invalid token")
 }

@@ -2,10 +2,8 @@ package api
 
 import (
 	"net/http"
-	"strings"
 
 	"github.com/gin-gonic/gin"
-	"meteor-server/pkg/db"
 )
 
 var capes      []byte
@@ -21,7 +19,7 @@ func CapeOwnersHandler(c *gin.Context) {
 
 func UpdateCapes() {
 	// Capes
-	sb := strings.Builder{}
+	/*sb := strings.Builder{}
 
 	for i, cape := range db.GetAllCapes() {
 		if i > 0 {
@@ -60,5 +58,5 @@ func UpdateCapes() {
 		}
 	}
 
-	capeOwners = []byte(sb.String())
+	capeOwners = []byte(sb.String())*/
 }

@@ -10,12 +10,10 @@ import (
 	"meteor-server/pkg/db"
 )
 
-func indexHandler(c *gin.Context) {
-	c.File("pages/index.html")
-}
-
-func infoHandler(c *gin.Context) {
-	c.File("pages/info.html")
+func fileHandler(file string) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.File(file)
+	}
 }
 
 func Main() {
@@ -30,8 +28,10 @@ func Main() {
 	r := gin.Default()
 	r.Static("/static", "static")
 
-	r.GET("/", indexHandler)
-	r.GET("/info", infoHandler)
+	r.GET("/", fileHandler("pages/index.html"))
+	r.GET("/info", fileHandler("pages/info.html"))
+	r.GET("/login", fileHandler("pages/login.html"))
+	r.GET("/account", fileHandler("pages/account.html"))
 
 	{
 		// /api

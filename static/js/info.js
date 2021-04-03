@@ -1,4 +1,4 @@
-httpGet("/api/stats", res => {
+httpGet("/api/stats").then(res => {
     $("#version").textContent += res.version
 
     let ul = $("#changelog")
