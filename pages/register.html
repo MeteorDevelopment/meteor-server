@@ -2,25 +2,28 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Meteor Development | Login</title>
+    <title>Meteor Development | Register</title>
 
     <meta name="keywords" content="Minecraft, Minecraft, utility, mod, utility mod, client, utility client, Utility Mod, Utility Client, Mod, Utility, Client, Minecraft utility mod, Minecraft utility mod, Meteor, meteor, Meteor Client, meteor client, Meteor utility mod, meteor utility mod">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
     <form id="form">
-        <label for="name">Name:</label>
-        <input type="text" id="name" name="name"><br>
+        <label for="username">Name:</label>
+        <input type="text" id="username" name="username"><br>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email"><br>
 
         <label for="password">Password:</label>
         <input type="password" id="password" name="password"><br>
 
-        <input type="submit" value="Login">
+        <input type="submit" value="Register">
     </form>
 
-    <p>Don't have an account? <a href="/register">Register</a></p>
+    <p>Already have an account? <a href="/login">Login</a></p>
 
     <script src="/static/js/core.js"></script>
-    <script src="/static/js/login.js"></script>
+    <script src="/static/js/register.js"></script>
 </body>
 </html>

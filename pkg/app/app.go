@@ -30,6 +30,8 @@ func Main() {
 
 	r.GET("/", fileHandler("pages/index.html"))
 	r.GET("/info", fileHandler("pages/info.html"))
+	r.GET("/register", fileHandler("pages/register.html"))
+	r.GET("/confirm", fileHandler("pages/confirm.html"))
 	r.GET("/login", fileHandler("pages/login.html"))
 	r.GET("/account", fileHandler("pages/account.html"))
 
@@ -45,6 +47,8 @@ func Main() {
 			// /api/account
 			g2 := g.Group("/account")
 
+			g2.POST("/register", api.RegisterHandler)
+			g2.POST("/confirm", api.ConfirmEmailHandler)
 			g2.GET("/login", api.LoginHandler)
 
 			g2.GET("/info", auth.Auth, api.AccountInfoHandler)

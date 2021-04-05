@@ -80,12 +80,25 @@ func GetAccountsWithCape() []Account {
 	return acc
 }
 
-func GetAccountWithUsernameOrEmail(name string) (Account, error) {
+func GetAccountWithUsername(username string) (Account, error) {
 	var acc Account
-	err := accounts.FindOne(nil, bson.M{"username": name}).Decode(&acc)
+	err := accounts.FindOne(nil, bson.M{"username": username}).Decode(&acc)
+
+	return acc, err
+}
+
+func GetAccountWithEmail(email string) (Account, error) {
+	var acc Account
+	err := accounts.FindOne(nil, bson.M{"email": email}).Decode(&acc)
+
+	return acc, err
+}
+
+func GetAccountWithUsernameOrEmail(name string) (Account, error) {
+	acc, err := GetAccountWithUsername(name)
 
 	if err != nil {
-		err = accounts.FindOne(nil, bson.M{"email": name}).Decode(&acc)
+		acc, err = GetAccountWithEmail(name)
 	}
 
 	return acc, err

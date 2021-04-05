@@ -4,10 +4,36 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/segmentio/ksuid"
 	"meteor-server/pkg/auth"
 	"meteor-server/pkg/core"
 	"meteor-server/pkg/db"
 )
+
+func RegisterHandler(c *gin.Context) {
+	err := auth.Register(c.Query("username"), c.Query("email"), c.Query("password"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{})
+}
+
+func ConfirmEmailHandler(c *gin.Context) {
+	token, err := ksuid.Parse(c.Query("token"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid token."})
+		return
+	}
+
+	if !auth.ConfirmEmail(token) {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to confirm the email address."})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{})
+}
 
 func LoginHandler(c *gin.Context) {
 	token, err := auth.Login(c.Query("name"), c.Query("password"))
