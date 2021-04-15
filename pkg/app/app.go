@@ -1,18 +1,24 @@
 package app
 
 import (
-	"log"
-
 	"github.com/gin-gonic/gin"
+	"log"
 	"meteor-server/pkg/api"
 	"meteor-server/pkg/auth"
 	"meteor-server/pkg/core"
 	"meteor-server/pkg/db"
+	"net/http"
 )
 
 func fileHandler(file string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.File(file)
+	}
+}
+
+func redirectHandler(url string) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Redirect(http.StatusPermanentRedirect, url)
 	}
 }
 
@@ -28,6 +34,13 @@ func Main() {
 	r := gin.Default()
 	r.Static("/static", "static")
 
+	// Redirects
+	r.GET("/discord", redirectHandler("https://discord.com/invite/hv6nz7WScU"))
+	r.GET("/donate", redirectHandler("https://www.paypal.com/paypalme/MineGame159"))
+	r.GET("/youtube", redirectHandler("https://www.youtube.com/channel/UCWfwmiYGlXXunsUc1Zvz8SQ"))
+	r.GET("/github", redirectHandler("https://github.com/MeteorDevelopment"))
+
+	// Pages
 	r.GET("/", fileHandler("pages/index.html"))
 	r.GET("/info", fileHandler("pages/info.html"))
 	r.GET("/register", fileHandler("pages/register.html"))
