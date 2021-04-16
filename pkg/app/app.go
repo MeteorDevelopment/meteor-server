@@ -1,6 +1,7 @@
 package app
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"log"
 	"meteor-server/pkg/api"
@@ -19,6 +20,26 @@ func fileHandler(file string) gin.HandlerFunc {
 func redirectHandler(url string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Redirect(http.StatusPermanentRedirect, url)
+	}
+}
+
+func downloadHandler() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		version := core.GetConfig().Version
+		devBuild := c.Request.URL.Query().Get("devBuild")
+
+		if devBuild == "" {
+			c.Writer.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=meteor-client-%s.jar", version))
+			c.Writer.Header().Set("Content-Type", "application/java-archive")
+			c.File(fmt.Sprintf("jars/meteor-client-%s.jar", version))
+			return
+		}
+
+		if devBuild == "latest" {
+			devBuild = db.GetGlobal().DevBuild
+		}
+
+		c.Redirect(http.StatusPermanentRedirect, fmt.Sprintf("https://%s-309730396-gh.circle-artifacts.com/0/build/libs/meteor-client-%s-%s.jar", devBuild, version, devBuild))
 	}
 }
 
@@ -47,6 +68,9 @@ func Main() {
 	r.GET("/confirm", fileHandler("pages/confirm.html"))
 	r.GET("/login", fileHandler("pages/login.html"))
 	r.GET("/account", fileHandler("pages/account.html"))
+
+	// Download
+	r.GET("/download", downloadHandler())
 
 	{
 		// /api
