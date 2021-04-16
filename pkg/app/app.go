@@ -2,13 +2,14 @@ package app
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"log"
+	"net/http"
+
+	"github.com/gin-gonic/gin"
 	"meteor-server/pkg/api"
 	"meteor-server/pkg/auth"
 	"meteor-server/pkg/core"
 	"meteor-server/pkg/db"
-	"net/http"
 )
 
 func fileHandler(file string) gin.HandlerFunc {
@@ -23,24 +24,22 @@ func redirectHandler(url string) gin.HandlerFunc {
 	}
 }
 
-func downloadHandler() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		version := core.GetConfig().Version
-		devBuild := c.Request.URL.Query().Get("devBuild")
+func downloadHandler(c *gin.Context) {
+	version := core.GetConfig().Version
+	devBuild := c.Request.URL.Query().Get("devBuild")
 
-		if devBuild == "" {
-			c.Writer.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=meteor-client-%s.jar", version))
-			c.Writer.Header().Set("Content-Type", "application/java-archive")
-			c.File(fmt.Sprintf("jars/meteor-client-%s.jar", version))
-			return
-		}
-
-		if devBuild == "latest" {
-			devBuild = db.GetGlobal().DevBuild
-		}
-
-		c.Redirect(http.StatusPermanentRedirect, fmt.Sprintf("https://%s-309730396-gh.circle-artifacts.com/0/build/libs/meteor-client-%s-%s.jar", devBuild, version, devBuild))
+	if devBuild == "" {
+		c.Writer.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=meteor-client-%s.jar", version))
+		c.Writer.Header().Set("Content-Type", "application/java-archive")
+		c.File(fmt.Sprintf("jars/meteor-client-%s.jar", version))
+		return
 	}
+
+	if devBuild == "latest" {
+		devBuild = db.GetGlobal().DevBuild
+	}
+
+	c.Redirect(http.StatusPermanentRedirect, fmt.Sprintf("https://%s-309730396-gh.circle-artifacts.com/0/build/libs/meteor-client-%s-%s.jar", devBuild, version, devBuild))
 }
 
 func Main() {
@@ -70,7 +69,7 @@ func Main() {
 	r.GET("/account", fileHandler("pages/account.html"))
 
 	// Download
-	r.GET("/download", downloadHandler())
+	r.GET("/download", downloadHandler)
 
 	{
 		// /api

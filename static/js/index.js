@@ -1,14 +1,10 @@
-
-httpGet("/api/stats").then(res => {
-    $("#version").textContent += res.version
-    $("#mc-version").textContent += res.mcVersion
-    $("#counter").textContent += 0
-})
-
 let target = 1;
 let current = 0;
 
 httpGet("/api/stats").then(res => {
+    $("#version").textContent += res.version
+    $("#mc-version").textContent += res.mcVersion
+
     target = +res.downloads
 })
 
