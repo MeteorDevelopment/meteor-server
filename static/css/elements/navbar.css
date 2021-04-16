@@ -1,12 +1,12 @@
 body {
-    padding-top: 5vh;
+    padding-top: 50px;
 }
 
 nav {
     position: fixed;
     top: 0;
     width: 100%;
-    height: 5vh;
+    height: 50px;
     display: flex;
     align-items: center;
     justify-content: space-around;
@@ -37,7 +37,7 @@ nav ul li a {
 }
 
 nav ul a:hover {
-    color: var(--med);
+    color: #ffffff;
 }
 
 @media screen and (max-width: 1300px){
