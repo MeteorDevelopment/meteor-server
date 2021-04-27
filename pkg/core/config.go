@@ -7,6 +7,7 @@ import (
 )
 
 type Config struct {
+	Port      int      `json:"port"`
 	Version   string   `json:"version"`
 	McVersion string   `json:"mcVersion"`
 	Changelog []string `json:"changelog"`

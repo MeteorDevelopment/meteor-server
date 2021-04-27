@@ -109,11 +109,12 @@ func Main() {
 	}
 
 	s := &http.Server{
-		Addr:         ":80",
+		Addr:         fmt.Sprintf(":%d", core.GetConfig().Port),
 		Handler:      handlers.LoggingHandler(os.Stdout, r),
 		WriteTimeout: 10 * time.Second,
 		ReadTimeout:  10 * time.Second,
 	}
 
+	fmt.Printf("Listening on %s\n", s.Addr)
 	log.Fatal(s.ListenAndServe())
 }
