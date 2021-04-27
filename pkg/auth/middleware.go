@@ -1,25 +1,29 @@
 package auth
 
 import (
+	"context"
+	"encoding/json"
+	"meteor-server/pkg/core"
 	"net/http"
 	"strings"
-
-	"github.com/gin-gonic/gin"
 )
 
-func Auth(c *gin.Context) {
-	token := c.GetHeader("Authorization")
+func Auth(next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		token := r.Header.Get("Authorization")
 
-	if strings.HasPrefix(token, "Bearer ") {
-		token = strings.TrimPrefix(token, "Bearer ")
-		id, err := IsTokenValid(token)
+		if strings.HasPrefix(token, "Bearer ") {
+			token = strings.TrimPrefix(token, "Bearer ")
+			id, err := IsTokenValid(token)
 
-		if err == nil {
-			c.Set("id", id)
-			return
+			if err == nil {
+				next(w, r.WithContext(context.WithValue(r.Context(), "id", id)))
+				return
+			}
 		}
-	}
 
-	c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized."})
-	c.Abort()
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusUnauthorized)
+		json.NewEncoder(w).Encode(core.J{"error": "Unauthorized."})
+	}
 }

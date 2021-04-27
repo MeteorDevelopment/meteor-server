@@ -2,8 +2,8 @@ package db
 
 import (
 	"log"
+	"net/http"
 
-	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/segmentio/ksuid"
 	"go.mongodb.org/mongo-driver/bson"
@@ -58,9 +58,9 @@ func NewAccount(username string, email string, password string) error {
 	return err
 }
 
-func GetAccount(c *gin.Context) (Account, error) {
+func GetAccount(r *http.Request) (Account, error) {
 	var acc Account
-	err := accounts.FindOne(nil, bson.M{"id": core.GetAccountID(c)}).Decode(&acc)
+	err := accounts.FindOne(nil, bson.M{"id": core.GetAccountID(r)}).Decode(&acc)
 
 	return acc, err
 }

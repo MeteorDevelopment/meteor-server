@@ -1,37 +1,38 @@
 package api
 
 import (
+	"encoding/json"
+	"meteor-server/pkg/core"
 	"net/http"
 	"time"
-
-	"github.com/gin-gonic/gin"
 )
 
 var playing = make(map[string]time.Time)
 var uuids = make(map[string]string)
 
-func PingHandler(c *gin.Context) {
-	ip := c.ClientIP()
+func PingHandler(w http.ResponseWriter, r *http.Request) {
+	ip := core.IP(r)
 	playing[ip] = time.Now()
 
-	id := c.Query("uuid")
+	id := r.URL.Query().Get("uuid")
 	if id != "" {
 		uuids[ip] = id
 	}
 }
 
-func LeaveHandler(c *gin.Context) {
-	ip := c.ClientIP()
+func LeaveHandler(w http.ResponseWriter, r *http.Request) {
+	ip := core.IP(r)
 
 	delete(playing, ip)
 	delete(uuids, ip)
 }
 
-func UsingMeteorHandler(c *gin.Context) {
+func UsingMeteorHandler(w http.ResponseWriter, r *http.Request) {
 	var reqUuids []string
-	err := c.BindJSON(&reqUuids)
+	err := json.NewDecoder(r.Body).Decode(&reqUuids)
+
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request data."})
+		core.JsonError(w, "Invalid request data.")
 		return
 	}
 
@@ -44,7 +45,7 @@ func UsingMeteorHandler(c *gin.Context) {
 		}
 	}
 
-	c.JSON(http.StatusOK, resUuids)
+	core.Json(w, resUuids)
 }
 
 func ValidateOnlinePlayers() {

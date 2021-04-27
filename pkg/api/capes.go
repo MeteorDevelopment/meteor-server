@@ -2,19 +2,17 @@ package api
 
 import (
 	"net/http"
-
-	"github.com/gin-gonic/gin"
 )
 
-var capes      []byte
+var capes []byte
 var capeOwners []byte
 
-func CapesHandler(c *gin.Context) {
-	c.Data(http.StatusOK, "text/plain", capes)
+func CapesHandler(w http.ResponseWriter, r *http.Request) {
+	w.Write(capes)
 }
 
-func CapeOwnersHandler(c *gin.Context) {
-	c.Data(http.StatusOK, "text/plain", capeOwners)
+func CapeOwnersHandler(w http.ResponseWriter, r *http.Request) {
+	w.Write(capeOwners)
 }
 
 func UpdateCapes() {

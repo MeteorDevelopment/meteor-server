@@ -3,64 +3,67 @@ package api
 import (
 	"net/http"
 
-	"github.com/gin-gonic/gin"
 	"github.com/segmentio/ksuid"
 	"meteor-server/pkg/auth"
 	"meteor-server/pkg/core"
 	"meteor-server/pkg/db"
 )
 
-func RegisterHandler(c *gin.Context) {
-	err := auth.Register(c.Query("username"), c.Query("email"), c.Query("password"))
+func RegisterHandler(w http.ResponseWriter, r *http.Request) {
+	q := r.URL.Query()
+
+	err := auth.Register(q.Get("username"), q.Get("email"), q.Get("password"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		core.JsonError(w, err.Error())
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{})
+	core.Json(w, core.J{})
 }
 
-func ConfirmEmailHandler(c *gin.Context) {
-	token, err := ksuid.Parse(c.Query("token"))
+func ConfirmEmailHandler(w http.ResponseWriter, r *http.Request) {
+	token, err := ksuid.Parse(r.URL.Query().Get("token"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid token."})
+		core.JsonError(w, "Invalid token.")
 		return
 	}
 
 	if !auth.ConfirmEmail(token) {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to confirm the email address."})
+		core.JsonError(w, "Failed to confirm email address.")
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{})
+	core.Json(w, core.J{})
 }
 
-func LoginHandler(c *gin.Context) {
-	token, err := auth.Login(c.Query("name"), c.Query("password"))
+func LoginHandler(w http.ResponseWriter, r *http.Request) {
+	q := r.URL.Query()
+
+	token, err := auth.Login(q.Get("name"), q.Get("password"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Wrong name or password."})
+		core.JsonError(w, "Wrong name or password.")
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"token": token})
+	core.Json(w, core.J{"token": token})
 }
 
-func LogoutHandler(c *gin.Context) {
-	auth.Logout(core.GetAccountID(c))
-	c.JSON(http.StatusOK, gin.H{})
+func LogoutHandler(w http.ResponseWriter, r *http.Request) {
+	auth.Logout(core.GetAccountID(r))
+	core.Json(w, core.J{})
 }
 
-func AccountInfoHandler(c *gin.Context) {
-	account, err := db.GetAccount(c)
+func AccountInfoHandler(w http.ResponseWriter, r *http.Request) {
+	account, err := db.GetAccount(r)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Could not get account."})
+		core.JsonError(w, "Could not get account.")
 		return
 	}
 
-	c.JSON(http.StatusOK, account)
+	core.Json(w, account)
 }
 
-func McAccountHandler(c *gin.Context) {
+func McAccountHandler(w http.ResponseWriter, r *http.Request) {
 	// Get Minecraft UUID
 	/*id, err := uuid.Parse(c.Param("uuid"))
 	if err != nil {
