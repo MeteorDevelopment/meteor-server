@@ -1,9 +1,17 @@
 package main
 
 import (
-	"meteor-server/pkg/app"
+	"meteor-server/pkg/core"
+	"meteor-server/pkg/db"
+	"meteor-server/pkg/web"
 )
 
 func main() {
-	app.Main()
+	core.LoadConfig()
+	core.InitEmail()
+
+	db.Init()
+	defer db.Close()
+
+	web.Main()
 }

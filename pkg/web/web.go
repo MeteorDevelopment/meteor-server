@@ -1,4 +1,4 @@
-package app
+package web
 
 import (
 	"fmt"
@@ -6,11 +6,11 @@ import (
 	"github.com/gorilla/mux"
 	"log"
 	"meteor-server/pkg/auth"
+	"meteor-server/pkg/web/api"
 	"net/http"
 	"os"
 	"time"
 
-	"meteor-server/pkg/api"
 	"meteor-server/pkg/core"
 	"meteor-server/pkg/db"
 )
@@ -46,12 +46,6 @@ func downloadHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func Main() {
-	core.LoadConfig()
-	core.InitEmail()
-
-	db.Init()
-	defer db.Close()
-
 	api.UpdateCapes()
 
 	r := mux.NewRouter()
