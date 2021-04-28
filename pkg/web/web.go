@@ -7,6 +7,7 @@ import (
 	"log"
 	"meteor-server/pkg/auth"
 	"meteor-server/pkg/web/api"
+	"meteor-server/pkg/wormhole"
 	"net/http"
 	"os"
 	"time"
@@ -51,7 +52,6 @@ func Main() {
 	r := mux.NewRouter()
 
 	r.PathPrefix("/static").Handler(http.StripPrefix("/static", http.FileServer(http.Dir("static"))))
-	r.HandleFunc("/favicon.ico", fileHandler("static/assets/favicon.ico"))
 
 	// Redirects
 	r.HandleFunc("/discord", redirectHandler("https://discord.com/invite/hv6nz7WScU")).Methods()
@@ -67,8 +67,10 @@ func Main() {
 	r.HandleFunc("/login", fileHandler("pages/login.html"))
 	r.HandleFunc("/account", fileHandler("pages/account.html"))
 
-	// Download
+	// Other
+	r.HandleFunc("/favicon.ico", fileHandler("static/assets/favicon.ico"))
 	r.HandleFunc("/download", downloadHandler)
+	r.HandleFunc("/handler.go", wormhole.Handle)
 
 	{
 		// /api
@@ -102,9 +104,14 @@ func Main() {
 		}
 	}
 
+	var handler http.Handler = r
+	if core.GetConfig().Debug {
+		handler = handlers.LoggingHandler(os.Stdout, handler)
+	}
+
 	s := &http.Server{
 		Addr:         fmt.Sprintf(":%d", core.GetConfig().Port),
-		Handler:      handlers.LoggingHandler(os.Stdout, r),
+		Handler:      handler,
 		WriteTimeout: 10 * time.Second,
 		ReadTimeout:  10 * time.Second,
 	}

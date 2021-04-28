@@ -65,6 +65,13 @@ func GetAccount(r *http.Request) (Account, error) {
 	return acc, err
 }
 
+func GetAccountId(id ksuid.KSUID) (Account, error) {
+	var acc Account
+	err := accounts.FindOne(nil, bson.M{"id": id}).Decode(&acc)
+
+	return acc, err
+}
+
 func GetAccountsWithCape() []Account {
 	cursor, err := accounts.Find(nil, bson.M{"cape": bson.M{"$ne": ""}})
 	if err != nil {

@@ -1,8 +1,9 @@
 {
-  "Port": 80,
-  "Version": "0.4.3",
-  "McVersion": "1.16.5",
-  "Changelog": [
+  "port": 80,
+  "debug": true,
+  "version": "0.4.3",
+  "mcVersion": "1.16.5",
+  "changelog": [
     "Added bypass to No Slow",
     "Added Only On Kill Aura setting to Criticals",
     "Improved Elytra Fly",
