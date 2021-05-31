@@ -5,7 +5,7 @@ $("#form").addEventListener("submit", ev => {
         .then(() => {
             location.replace("/confirm")
         })
-        .catch(res => {
-            console.log(res)
+        .catch(reason => {
+            $(".error").textContent = reason.error
         })
 })

@@ -10,5 +10,8 @@ else {
                 localStorage.setItem("token", res.token)
                 location.replace("/account")
             })
+            .catch(reason => {
+                $(".error").textContent = reason.error
+            })
     })
 }
