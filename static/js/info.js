@@ -1,5 +1,6 @@
 httpGet("/api/stats").then(res => {
-    $("#version").textContent += res.version
+    $("#version").textContent = res.version
+    document.querySelectorAll(".mc-version").forEach(element => element.textContent = res.mcVersion)
 
     let ul = $("#changelog")
 

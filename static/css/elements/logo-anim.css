@@ -1,0 +1,64 @@
+.meteor-logo {
+  overflow: visible;
+  animation: fill 0.5s ease forwards 3s;
+}
+
+.meteor-logo path:nth-child(1) {
+  stroke-dasharray: 754.9266967773438px;
+  stroke-dashoffset: 754.9266967773438px;
+  animation: logoAnim 2s ease forwards;
+  stroke-linecap: square;
+}
+.meteor-logo path:nth-child(2) {
+  stroke-dasharray: 463.968017578125px;
+  stroke-dashoffset: 463.968017578125px;
+  animation: logoAnim 2s ease forwards 0.3s;
+  stroke-linecap: square;
+}
+.meteor-logo path:nth-child(3) {
+  stroke-dasharray: 336.6719970703125px;
+  stroke-dashoffset: 336.6719970703125px;
+  animation: logoAnim 2s ease forwards 0.6s;
+  stroke-linecap: square;
+}
+.meteor-logo path:nth-child(4) {
+  stroke-dasharray: 463.968017578125px;
+  stroke-dashoffset: 463.968017578125px;
+  animation: logoAnim 2s ease forwards 0.9s;
+  stroke-linecap: square;
+}
+.meteor-logo path:nth-child(5) {
+  stroke-dasharray: 549.067138671875px;
+  stroke-dashoffset: 549.067138671875px;
+  animation: logoAnim 3s ease forwards 1.5s;
+  stroke-linecap: round;
+}
+.meteor-logo path:nth-child(6) {
+  stroke-dasharray: 549.067138671875px;
+  stroke-dashoffset: 549.067138671875px;
+  animation: logoAnim 3s ease forwards 1.5s, fill-red 0.5s ease forwards 3s;
+}
+
+@keyframes logoAnim {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes fill {
+  from {
+    fill: transparent;
+  }
+  to {
+    fill: var(--text-light);
+  }
+}
+
+@keyframes fill-red {
+  from {
+    fill: transparent;
+  }
+  to {
+    fill: var(--meteor-alt);
+  }
+}

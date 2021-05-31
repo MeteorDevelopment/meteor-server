@@ -1,0 +1,119 @@
+body {
+    background-color: var(--background-light);
+    margin-top: 8vh;
+}
+
+input {
+    padding: 12px 20px;
+    display: inline-block;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+}
+
+.footer {
+    position: absolute !important;
+    width: 100% !important;
+}
+
+.select-cape {
+    color: var(--text-light);
+    background-color: var(--text-dark);
+    border: none;
+    margin-left: 1.5em;
+    padding: 5px;
+    border-radius: 3px;
+}
+
+
+.card-container {
+    display: flex !important;
+    justify-content: center !important;
+}
+
+.card-outer {
+    width: 90% !important;
+}
+
+#discord-accounts {
+    background-color: var(--discord);
+    color: var(--text-light);
+}
+
+.card-inner h1 {
+    text-align: center;
+    margin-bottom: 1vh;
+}
+
+.card-inner p {
+    margin-bottom: 2vh;
+}
+
+.card-inner ul {
+    list-style: none;
+}
+
+.section-body {
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+@media screen and (max-width: 800px) {
+    .card-container {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+    }
+}
+
+.section-title {
+    padding-top: 3vh;
+}
+
+.section-sub-head {
+    margin-top: 3vh;
+    font-size: 120%;
+    font-weight: bolder;
+}
+
+.cape-item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.cape-item #cape-title {
+    margin: 0;
+    padding: 0;
+}
+
+.cape-item img {
+    margin-top: 2vh;
+}
+
+.mc-account-item {
+    display: flex;
+    justify-content: space-around;
+    width: 35%;
+    align-items: center;
+    margin: 0 auto 2vh;
+}
+
+.remove-mc-account {
+    background-color: #cc0000;
+    color: var(--text-light);
+    border: none;
+    padding: 5px;
+    border-radius: 3px;
+}
+
+.mc-accounts-list {
+    margin-top: 1vh;
+}
+
+.discord-account {
+    display: flex;
+    justify-content: space-around;
+    width: 25%;
+    align-items: center;
+    margin: 0 auto;
+}
