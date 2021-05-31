@@ -11,7 +11,7 @@
     <meta name="og:title" content="Home">
     <meta name="og:url" content="https://meteorclient.com">
     <meta name="theme-color" content="#cc0000">
-    <meta name="og:description" content="The website of the Meteor Development group. Made by seasnail8169.">
+    <meta name="og:description" content="The website for Meteor Development.">
 
     <!--Other Meta-->
     <meta name="keywords" content="Minecraft, Minecraft, utility, mod, utility mod, client, utility client, Utility Mod, Utility Client, Mod, Utility, Client, Minecraft utility mod, Minecraft utility mod, Meteor, meteor, Meteor Client, meteor client, Meteor utility mod, meteor utility mod">
@@ -31,13 +31,14 @@
 </head>
 
 <body>
+    <!--Nav-->
     <nav class="navbar">
         <h1 class="nav-title">METEOR</h1>
         <ul class="nav-links">
             <li><a href="/">Home</a></li>
-            <li><a href="#projects">Projects</a></li>
             <li><a href="#about">About</a></li>
-            <li><a href="/info">Faq</a></li>
+            <li><a href="/faq">FAQ</a></li>
+            <li><a href="/changelog">Changelog</a></li>
             <li><a href="/account">Account</a></li>
         </ul>
         <div class="burger">
@@ -47,7 +48,7 @@
         </div>
     </nav>
 
-    <!--Home-Begin-->
+    <!--Top Section-->
     <div class="section-container" id="home">
         <div class="section-body">
             <div class="section-title">Welcome to</div>
@@ -61,7 +62,6 @@
                     <path d="M388.661 120.503C393.958 123.501 399.817 125 406.24 125C412.728 125 418.621 123.501 423.918 120.503C429.215 117.439 433.386 113.208 436.432 107.812C439.477 102.416 441 96.2872 441 89.4254C441 82.5637 439.477 76.4347 436.432 71.0386C433.386 65.6424 421.215 57.4454 415.918 54.4476L336.5 0L375.048 101.812C378 112 383.364 117.439 388.661 120.503Z" stroke="#cc0000" stroke-width="5"/>
                 </svg>
             </div>
-            <div class="section-desc">Creators of the Meteor Network.</div>
             <div class="button-container">
                 <a href="/discord" target="_blank" class="button" id="discord">
                     <i class="fab fa-discord"></i>
@@ -74,21 +74,23 @@
             </div>
         </div>
     </div>
-    <!--Home-End-->
 
-    <!--Client-Begin-->
-    <div id="projects"></div>
+    <!--Client Section-->
     <div class="section-container" id="client">
         <div class="section-body">
             <h1 class="section-title">Meteor Client</h1>
             <div class="download">
                 <div class="section-desc">
-                    <p>Download <strong>Meteor Client</strong> <span id="version">0.0.0</span><br>Download Count: <span id="downloads">0</span><br>Online Players: <span id="online-players">0</span></p>
+                    <p>Downloads: <span id="downloads">0</span><br>Online Players: <span id="online-players">0</span></p>
                 </div>
                 <div class="button-container">
                     <a href="/download" target="_blank" class="button" id="download">
                         <i class="fas fa-arrow-circle-down"></i>
-                        <span id="mc-version"></span>
+                        Release <span id="version">0.0.0</span>
+                    </a>
+                    <a href="/download?devBuild=latest" target="_blank" class="button" id="download">
+                        <i class="fas fa-arrow-circle-down"></i>
+                        Dev Build <span id="dev-version">0.0.0 - 0</span>
                     </a>
                 </div>
             </div>
@@ -133,9 +135,8 @@
             </g>
         </svg>
     </div>
-    <!--Client-End-->
 
-    <!--Server-Begin-->
+    <!--Meteor PvP Section-->
     <div class="section-container" id="server">
         <div class="section-body">
             <div class="section-title">Meteor PvP</div>
@@ -154,9 +155,8 @@
             </div>
         </div>
     </div>
-    <!--Server-End-->
 
-    <!--Dev-Team-Begin-->
+    <!--About Section-->
     <div id="about"></div>
     <div class="section-container" id="dev-team">
         <div class="section-body">
@@ -201,10 +201,10 @@
             </div>
         </div>
     </div>
-    <!--Dev-Team-End-->
 
+    <!--Footer-->
     <div class="footer">
-        <div class="footer-sec-1">Copyright &copy; 2019 - 2021 meteorclient.com | All Rights Reserved.</div>
+        <div class="footer-sec-1">Copyright &copy; 2021 meteorclient.com | All Rights Reserved.</div>
         <div class="footer-sec-3">Designed by <a href="https://github.com/seasnail8169" target="_blank">seasnail8169</a>.</div>
     </div>
 

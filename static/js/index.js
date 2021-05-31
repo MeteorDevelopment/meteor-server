@@ -6,6 +6,7 @@ let currentPlayers = 0
 
 httpGet("/api/stats").then(res => {
     $("#version").textContent = res.version
+    $("#dev-version").textContent = res.version + " - " + res.devBuild
     $("#mc-version").textContent = res.mcVersion
 
     targetDownloads = res.downloads

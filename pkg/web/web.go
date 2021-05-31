@@ -58,10 +58,11 @@ func Main() {
 	r.HandleFunc("/donate", redirectHandler("https://www.paypal.com/paypalme/MineGame159"))
 	r.HandleFunc("/youtube", redirectHandler("https://www.youtube.com/channel/UCWfwmiYGlXXunsUc1Zvz8SQ"))
 	r.HandleFunc("/github", redirectHandler("https://github.com/MeteorDevelopment"))
+	r.HandleFunc("/faq", redirectHandler("https://github.com/MeteorDevelopment/meteor-client/wiki"))
 
 	// Pages
 	r.HandleFunc("/", fileHandler("pages/index.html"))
-	r.HandleFunc("/info", fileHandler("pages/info.html"))
+	r.HandleFunc("/changelog", fileHandler("pages/changelog.html"))
 	r.HandleFunc("/register", fileHandler("pages/register.html"))
 	r.HandleFunc("/confirm", fileHandler("pages/confirm.html"))
 	r.HandleFunc("/login", fileHandler("pages/login.html"))

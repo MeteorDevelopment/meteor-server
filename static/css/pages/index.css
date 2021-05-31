@@ -29,7 +29,7 @@ body {
   margin-top: 3vh;
 }
 
-#home .button-container {
+.button-container {
   width: 30%;
   padding-bottom: 0;
 }
@@ -51,31 +51,31 @@ body {
 }
 
 @media screen and (max-width: 1150px) {
-  #home .button-container {
+  .button-container {
     width: 40%;
   }
 }
 
 @media screen and (max-width: 850px) {
-  #home .button-container {
+  .button-container {
     width: 50%;
   }
 }
 
 @media screen and (max-width: 700px) {
-  #home .button-container {
+  .button-container {
     width: 60%;
   }
 }
 
 @media screen and (max-width: 550px) {
-  #home .button-container {
+  .button-container {
     width: 80%;
   }
 }
 
 @media screen and (max-width: 430px) {
-  #home .button-container {
+  .button-container {
     display: flex;
     flex-direction: column;
     width: 50%;
@@ -89,6 +89,15 @@ body {
   background-color: var(--background-light);
 }
 
+#client .button-container {
+  display: flex;
+  flex-direction: column;
+}
+
+#client .button-container .button {
+  margin: 3px 0;
+}
+
 #client .section-body {
   color: var(--text-dark);
   width: 100%;
@@ -96,10 +105,6 @@ body {
 
 #client .download {
   font-size: 1.3em;
-}
-
-#client .button-container {
-  width: 60%;
 }
 
 #client .card-inner {
@@ -110,6 +115,7 @@ body {
   color: var(--text-light);
   background-color: var(--meteor-alt);
 }
+
 #client #download:hover {
   background-color: var(--meteor-main);
 }
@@ -137,27 +143,12 @@ body {
   background-color: var(--background-light);
 }
 
-@media screen and (max-width: 1150px) {
-  #client .button-container {
-    width: 70%;
-  }
-}
-
-@media screen and (max-width: 850px) {
-  #client .button-container {
-    width: 80%;
-  }
-}
-
 @media screen and (max-width: 700px) {
   #client .card-inner p {
     font-size: 13px;
   }
   #client .card-inner h1 {
     font-size: 20px;
-  }
-  #client .button-container {
-    width: 90%;
   }
 }
 
