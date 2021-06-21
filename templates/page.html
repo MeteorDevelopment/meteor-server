@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <title>{{ template "title" . }}</title>
+
+    <!--Discord Meta-->
+    <meta name="og:site_name" content="Meteor Development">
+    <meta name="og:type" content="object">
+    <meta name="og:image" content="https://raw.githubusercontent.com/MeteorDevelopment/meteor-server/master/src/main/resources/public/icon.png">
+    <meta name="og:title" content="Home">
+    <meta name="og:url" content="https://meteorclient.com">
+    <meta name="theme-color" content="#cc0000">
+    <meta name="og:description" content="The website for Meteor Development.">
+
+    <!--Other Meta-->
+    <meta name="keywords" content="Minecraft, Minecraft, utility, mod, utility mod, client, utility client, Utility Mod, Utility Client, Mod, Utility, Client, Minecraft utility mod, Minecraft utility mod, Meteor, meteor, Meteor Client, meteor client, Meteor utility mod, meteor utility mod">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="/stylesheet.css"/>
+</head>
+<body>
+    <!-- Navbar -->
+    <header class="navbar">
+        <h1 class="nav-title">METEOR</h1>
+
+        <ul class="nav-links">
+            <li><a href="/">Home</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="/faq">FAQ</a></li>
+            <li><a href="/changelog">Changelog</a></li>
+            <li><a href="/account">Account</a></li>
+        </ul>
+
+        <div class="burger">
+            <div class="line1"></div>
+            <div class="line2"></div>
+            <div class="line3"></div>
+        </div>
+    </header>
+
+    {{ template "body" . }}
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-sec-1">Copyright &copy; 2021 meteorclient.com | All Rights Reserved.</div>
+        <div class="footer-sec-2">Designed by <a href="https://github.com/seasnail8169" target="_blank">seasnail8169</a>.</div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="/static/js/core.js"></script>
+    <script src="/static/js/navbar.js"></script>
+</body>
+</html>

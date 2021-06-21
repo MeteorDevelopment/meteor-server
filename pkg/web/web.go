@@ -1,9 +1,11 @@
 package web
 
 import (
+	"bytes"
 	"fmt"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
+	"html/template"
 	"log"
 	"meteor-server/pkg/auth"
 	"meteor-server/pkg/web/api"
@@ -46,12 +48,35 @@ func downloadHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, fmt.Sprintf("https://%s-309730396-gh.circle-artifacts.com/0/build/libs/meteor-client-%s-%s.jar", devBuild, version, devBuild), http.StatusPermanentRedirect)
 }
 
+func RenderTemplate(name string) []byte {
+	var buffer bytes.Buffer
+
+	err := template.Must(template.ParseFiles("templates/"+name+".html", "templates/page.html")).ExecuteTemplate(&buffer, "page.html", nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return buffer.Bytes()
+}
+
 func Main() {
 	api.UpdateCapes()
 
 	r := mux.NewRouter()
 
 	r.PathPrefix("/static").Handler(http.StripPrefix("/static", http.FileServer(http.Dir("static"))))
+
+	css := parseCSS()
+	test := RenderTemplate("test")
+
+	r.HandleFunc("/stylesheet.css", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "text/css")
+		_, _ = w.Write(css)
+	})
+
+	r.HandleFunc("/test", func(w http.ResponseWriter, r *http.Request) {
+		_, _ = w.Write(test)
+	})
 
 	// Redirects
 	r.HandleFunc("/discord", redirectHandler("https://discord.com/invite/hv6nz7WScU")).Methods()
