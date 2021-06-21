@@ -297,28 +297,8 @@ body {
   width: 60%;
 }
 
-#dev-team .button {
-  color: var(--text-light);
-}
-
 #dev-team .button:hover {
   opacity: 80%;
-}
-
-#dev-team #discord {
-  background-color: var(--discord);
-}
-
-#dev-team #paypal {
-  background-color: var(--paypal);
-}
-
-#dev-team #youtube {
-  background-color: var(--youtube);
-}
-
-#dev-team #github {
-  background-color: var(--github);
 }
 
 @media screen and (max-width: 1150px) {

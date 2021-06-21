@@ -60,3 +60,19 @@ a {
     overflow-x: hidden;
   }
 }
+
+#discord {
+  background-color: var(--discord);
+}
+
+#paypal {
+  background-color: var(--paypal);
+}
+
+#youtube {
+  background-color: var(--youtube);
+}
+
+#github {
+  background-color: var(--github);
+}

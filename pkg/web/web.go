@@ -67,6 +67,7 @@ func Main() {
 	r.HandleFunc("/confirm", fileHandler("pages/confirm.html"))
 	r.HandleFunc("/login", fileHandler("pages/login.html"))
 	r.HandleFunc("/account", fileHandler("pages/account.html"))
+	r.HandleFunc("/donations", fileHandler("pages/donations.html"))
 
 	// Other
 	r.HandleFunc("/favicon.ico", fileHandler("static/assets/favicon.ico"))
