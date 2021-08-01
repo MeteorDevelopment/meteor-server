@@ -1,23 +1,25 @@
 package api
 
 import (
+	"meteor-server/pkg/db"
 	"net/http"
+	"strings"
 )
 
 var capes []byte
 var capeOwners []byte
 
 func CapesHandler(w http.ResponseWriter, r *http.Request) {
-	w.Write(capes)
+	_, _ = w.Write(capes)
 }
 
 func CapeOwnersHandler(w http.ResponseWriter, r *http.Request) {
-	w.Write(capeOwners)
+	_, _ = w.Write(capeOwners)
 }
 
 func UpdateCapes() {
 	// Capes
-	/*sb := strings.Builder{}
+	sb := strings.Builder{}
 
 	for i, cape := range db.GetAllCapes() {
 		if i > 0 {
@@ -39,7 +41,7 @@ func UpdateCapes() {
 		if len(account.McAccounts) > 0 {
 			cape := account.Cape
 			if cape == "custom" {
-				cape = account.ID
+				cape = "account_" + account.ID.String()
 			}
 
 			for _, uuid := range account.McAccounts {
@@ -56,5 +58,5 @@ func UpdateCapes() {
 		}
 	}
 
-	capeOwners = []byte(sb.String())*/
+	capeOwners = []byte(sb.String())
 }

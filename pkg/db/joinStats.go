@@ -2,6 +2,7 @@ package db
 
 import (
 	"go.mongodb.org/mongo-driver/bson"
+	"meteor-server/pkg/core"
 )
 
 type JoinStats struct {
@@ -16,4 +17,12 @@ func GetJoinStats(date string) (JoinStats, error) {
 	var err = joinStats.FindOne(nil, bson.M{"id": date}).Decode(&stats)
 
 	return stats, err
+}
+
+func IncrementJoins() {
+	_, _ = joinStats.UpdateOne(nil, bson.M{"id": core.GetDate()}, bson.M{"$inc": bson.M{"joins": 1}})
+}
+
+func IncrementLeaves() {
+	_, _ = joinStats.UpdateOne(nil, bson.M{"id": core.GetDate()}, bson.M{"$inc": bson.M{"leaves": 1}})
 }

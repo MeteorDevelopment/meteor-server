@@ -3,6 +3,7 @@ package auth
 import (
 	"encoding/json"
 	"errors"
+	"strings"
 	"sync"
 	"time"
 
@@ -36,8 +37,8 @@ var confirmEmails = make(map[ksuid.KSUID]ConfirmEmailStruct)
 var cetMu = sync.RWMutex{}
 
 func Register(username string, email string, password string) error {
-	if username == "" || email == "" || password == "" {
-		return errors.New("Empty username, email or password.")
+	if username == "" || strings.ContainsRune(username, ' ') || email == "" || strings.ContainsRune(email, ' ') || password == "" || strings.ContainsRune(password, ' ') {
+		return errors.New("Invalid username, email or password.")
 	}
 
 	if !core.IsEmailValid(email) {
@@ -61,7 +62,7 @@ func Register(username string, email string, password string) error {
 	confirmEmails[token] = ConfirmEmailStruct{Token: token, Username: username, Email: email, Password: password, Time: time.Now()}
 	cetMu.Unlock()
 
-	core.SendEmail(email, "Confirm email to register", "To complete the registration go to https://meteorclient.com/confirm?token=" + token.String() + ". The link is valid for 15 minutes.")
+	core.SendEmail(email, "Confirm email to register", "To complete the registration go to https://meteorclient.com/confirm?token="+token.String()+". The link is valid for 15 minutes.")
 	return nil
 }
 

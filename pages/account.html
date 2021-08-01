@@ -1,22 +1,129 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <title>Meteor Development | Account</title>
 
+    <!--Discord Meta-->
+    <meta name="og:site_name" content="Meteor Development">
+    <meta name="og:type" content="object">
+    <meta name="og:image" content="https://raw.githubusercontent.com/MeteorDevelopment/meteor-server/master/src/main/resources/public/icon.png">
+    <meta name="og:title" content="Account">
+    <meta name="og:url" content="https://meteorclient.com/login">
+    <meta name="theme-color" content="#cc0000">
+    <meta name="og:description" content="The website of the Meteor Development group. Made by seasnail8169.">
+
+    <!--Other Meta-->
     <meta name="keywords" content="Minecraft, Minecraft, utility, mod, utility mod, client, utility client, Utility Mod, Utility Client, Mod, Utility, Client, Minecraft utility mod, Minecraft utility mod, Meteor, meteor, Meteor Client, meteor client, Meteor utility mod, meteor utility mod">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!--Stylesheets-->
+    <script src="https://kit.fontawesome.com/d5536945b2.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="/static/css/main.css"/>
+    <link rel="stylesheet" href="/static/css/elements/footer.css"/>
+    <link rel="stylesheet" href="/static/css/elements/form.css"/>
+    <link rel="stylesheet" href="/static/css/elements/section.css"/>
+    <link rel="stylesheet" href="/static/css/elements/navbar.css"/>
+    <link rel="stylesheet" href="/static/css/elements/card.css"/>
+    <link rel="stylesheet" href="/static/css/pages/account.css"/>
+    <link rel="stylesheet" href="/static/css/pages/other.css"/>
 </head>
 <body>
-    <!-- Needs to be at the top to switch to /login as soon as possible to prevent flickering -->
+    <!-- Needs to be at the top -->
     <script src="/static/js/core.js"></script>
     <script src="/static/js/account.js"></script>
 
-    <button id="logout">Logout</button><br><br>
+    <!--Nav-->
+    <nav class="navbar">
+        <h1 class="nav-title">METEOR</h1>
+        <ul class="nav-links">
+            <li><a href="/">Home</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="/faq">FAQ</a></li>
+            <li><a href="/changelog">Changelog</a></li>
+            <li><a href="/account">Account</a></li>
+        </ul>
+        <div class="burger">
+            <div class="line1"></div>
+            <div class="line2"></div>
+            <div class="line3"></div>
+        </div>
+    </nav>
 
-    <span id="username">Username: </span><br>
-    <span id="email">Email: </span><br>
-    <span id="admin">Admin: </span><br>
-    <span id="donator">Donator: </span><br>
+    <!-- Discord -->
+    <div class="section-container">
+        <div class="section-body">
+            <div class="section-title">Manage Account</div>
+            <div class="card-container">
+                <div class="card-outer">
+                    <div class="card-inner" id="discord-accounts">
+                        <h1 id="discord-header">Discord</h1>
+                        <div id="discord-preview"></div>
+                        <div class="button-container" id="discord-container"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mc accounts -->
+    <div class="section-container" id="mc-accounts">
+        <div class="section-body">
+            <div class="card-container">
+                <div class="card-outer">
+                    <div class="card-inner">
+                        <h1>Minecraft</h1>
+                        <ul class="mc-accounts-list" id="mc-accounts-list"></ul>
+
+                        <form id="add-mc-account-form">
+                            <input type="text" size="30" placeholder="Username" name="username" id="add-mc-account-username">
+                            <input type="submit" value="Add Account">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Capes -->
+    <div class="section-container" id="cape">
+        <div class="section-body">
+            <div class="card-container">
+                <div class="card-outer">
+                    <div class="card-inner">
+                        <h1>Cape</h1>
+
+                        <ul id="cape-list"></ul>
+
+                        <form class="section-form" id="upload-cape-form">
+                            <label class="section-sub-head" for="upload-cape-file">Upload custom cape</label>
+                            <input type="file" name="file" id="upload-cape-file">
+
+                            <div id="upload-cape-error"></div>
+
+                            <input type="submit" value="Upload">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="section-container">
+        <div class="section-body">
+            <div class="card-container">
+                <div class="card-outer">
+                    <div class="card-inner">
+                        <h1>Controls</h1>
+                        <input type="button" onclick="logoutBtn()" value="Logout"/>
+                        <input type="submit" onclick="changeUsername()" value="Change Username"/>
+                        <input type="submit" onclick="changeEmail()" value="Change Email"/>
+                        <input type="submit" onclick="changePassword()" value="Change Password"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

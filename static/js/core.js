@@ -2,7 +2,7 @@ function $(selector) {
     return document.querySelector(selector)
 }
 
-function httpRequest(method, url, token) {
+function httpRequest(method, url, token, body) {
     return new Promise((resolve, reject) => {
         let http = new XMLHttpRequest()
         http.open(method, url)
@@ -16,20 +16,30 @@ function httpRequest(method, url, token) {
             }
         }
 
-        http.send()
+        http.send(body)
     })
 }
 
 function httpGet(url) {
-    return httpRequest("GET", url, null)
+    return httpRequest("GET", url, null, null)
 }
 function httpGetAuth(url) {
-    return httpRequest("GET", url, localStorage.getItem("token"))
+    return httpRequest("GET", url, localStorage.getItem("token"), null)
 }
 
 function httpPost(url) {
-    return httpRequest("POST", url, null)
+    return httpRequest("POST", url, null, null)
 }
 function httpPostAuth(url) {
-    return httpRequest("POST", url, localStorage.getItem("token"))
+    return httpRequest("POST", url, localStorage.getItem("token"), null)
+}
+function httpPostAuthBody(url, body) {
+    return httpRequest("POST", url, localStorage.getItem("token"), body)
+}
+
+function httpDeletePost(url) {
+    return httpRequest("DELETE", url, null, null)
+}
+function httpDeleteAuth(url) {
+    return httpRequest("DELETE", url, localStorage.getItem("token"), null)
 }

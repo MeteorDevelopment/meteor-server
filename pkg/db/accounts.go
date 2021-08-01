@@ -1,7 +1,9 @@
 package db
 
 import (
+	"errors"
 	"log"
+	"meteor-server/pkg/discord"
 	"net/http"
 
 	"github.com/google/uuid"
@@ -72,6 +74,13 @@ func GetAccountId(id ksuid.KSUID) (Account, error) {
 	return acc, err
 }
 
+func GetAccountDiscordId(id string) (Account, error) {
+	var acc Account
+	err := accounts.FindOne(nil, bson.M{"discord_id": id}).Decode(&acc)
+
+	return acc, err
+}
+
 func GetAccountsWithCape() []Account {
 	cursor, err := accounts.Find(nil, bson.M{"cape": bson.M{"$ne": ""}})
 	if err != nil {
@@ -115,7 +124,23 @@ func (acc *Account) PasswordMatches(password string) bool {
 	return bcrypt.CompareHashAndPassword(acc.Password, []byte(password)) == nil
 }
 
-/*func (acc *Account) AddMcAccount(id uuid.UUID) error {
+func (acc *Account) LinkDiscord(id string) {
+	_, _ = accounts.UpdateOne(nil, bson.M{"id": acc.ID}, bson.M{"$set": bson.M{"discord_id": id}})
+
+	if discord.HasRole(id, discord.DonatorRole) && !acc.Donator {
+		acc.GiveDonator()
+	}
+
+	discord.AddRole(id, discord.AccountRole)
+}
+
+func (acc *Account) UnlinkDiscord() {
+	_, _ = accounts.UpdateOne(nil, bson.M{"id": acc.ID}, bson.M{"$set": bson.M{"discord_id": ""}})
+
+	discord.RemoveRole(acc.DiscordID, discord.AccountRole)
+}
+
+func (acc *Account) AddMcAccount(id uuid.UUID) error {
 	// Check maximum number of Minecraft accounts
 	if len(acc.McAccounts) >= acc.MaxMcAccounts {
 		return errors.New("Exceeded maximum number of Minecraft accounts.")
@@ -128,10 +153,36 @@ func (acc *Account) PasswordMatches(password string) bool {
 		}
 	}
 
-	accounts.UpdateOne(nil, bson.M{"id": acc.ID}, bson.M{"$push": bson.M{"mcAccounts": id.String()}})
+	_, _ = accounts.UpdateOne(nil, bson.M{"id": acc.ID}, bson.M{"$push": bson.M{"mc_accounts": id.String()}})
 	return nil
 }
 
 func (acc *Account) RemoveMcAccount(id uuid.UUID) {
-	accounts.UpdateOne(nil, bson.M{"id": acc.ID}, bson.M{"$pull": bson.M{"mcAccounts": id.String()}})
-}*/
+	_, _ = accounts.UpdateOne(nil, bson.M{"id": acc.ID}, bson.M{"$pull": bson.M{"mc_accounts": id.String()}})
+}
+
+func (acc *Account) SetUsername(username string) {
+	_, _ = accounts.UpdateOne(nil, bson.M{"id": acc.ID}, bson.M{"$set": bson.M{"username": username}})
+}
+
+func (acc *Account) SetEmail(email string) {
+	_, _ = accounts.UpdateOne(nil, bson.M{"id": acc.ID}, bson.M{"$set": bson.M{"email": email}})
+}
+
+func (acc *Account) SetPassword(password string) error {
+	pass, err := bcrypt.GenerateFromPassword([]byte(password), 10)
+	if err != nil {
+		return err
+	}
+
+	_, _ = accounts.UpdateOne(nil, bson.M{"id": acc.ID}, bson.M{"$set": bson.M{"password": pass}})
+	return nil
+}
+
+func (acc *Account) SetCape(id string) {
+	_, _ = accounts.UpdateOne(nil, bson.M{"id": acc.ID}, bson.M{"$set": bson.M{"cape": id}})
+}
+
+func (acc *Account) GiveDonator() {
+	_, _ = accounts.UpdateOne(nil, bson.M{"id": acc.ID}, bson.M{"$set": bson.M{"donator": true, "can_have_custom_cape": true, "cape": "donator"}})
+}

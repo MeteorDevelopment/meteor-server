@@ -7,16 +7,19 @@ import (
 )
 
 type Config struct {
-	Port      int      `json:"port"`
-	Debug     bool     `json:"debug"`
-	Version   string   `json:"version"`
-	McVersion string   `json:"mcVersion"`
-	Changelog []string `json:"changelog"`
+	Port            int      `json:"port"`
+	Debug           bool     `json:"debug"`
+	Version         string   `json:"version"`
+	DevBuildVersion string   `json:"dev_build_version"`
+	McVersion       string   `json:"mc_version"`
+	Changelog       []string `json:"changelog"`
 }
 
 type PrivateConfig struct {
 	MongoDBUrl    string
 	EmailPassword string
+	DiscordToken  string
+	Token         string
 }
 
 var config Config

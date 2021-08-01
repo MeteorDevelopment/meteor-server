@@ -7,9 +7,8 @@ import (
 )
 
 type Cape struct {
-	ID             string `bson:"id"`
-	Url            string `bson:"url"`
-	SelfAssignable bool   `bson:"selfAssignable"`
+	ID  string `bson:"id" json:"id"`
+	Url string `bson:"url" json:"url"`
 }
 
 func GetAllCapes() []Cape {
@@ -25,4 +24,16 @@ func GetAllCapes() []Cape {
 	}
 
 	return c
+}
+
+func GetCape(id string) (Cape, error) {
+	var cape Cape
+	err := capes.FindOne(nil, bson.M{"id": id}).Decode(&cape)
+
+	return cape, err
+}
+
+func InsertCape(cape Cape) {
+	_, _ = capes.DeleteOne(nil, bson.M{"id": cape.ID})
+	_, _ = capes.InsertOne(nil, cape)
 }

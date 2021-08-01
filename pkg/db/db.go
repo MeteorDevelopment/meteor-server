@@ -68,10 +68,10 @@ func Init() {
 }
 
 func Close() {
-	client.Disconnect(nil)
+	_ = client.Disconnect(nil)
 }
 
 func IncrementDownloads() {
-	global.UpdateOne(nil, bson.M{"id": "Stats"}, bson.M{"$inc": bson.M{"downloads": 1}})
-	joinStats.UpdateOne(nil, bson.M{"id": core.GetDate()}, bson.M{"$inc": bson.M{"downloads": 1}}, options.Update().SetUpsert(true))
+	_, _ = global.UpdateOne(nil, bson.M{"id": "Stats"}, bson.M{"$inc": bson.M{"downloads": 1}})
+	_, _ = joinStats.UpdateOne(nil, bson.M{"id": core.GetDate()}, bson.M{"$inc": bson.M{"downloads": 1}}, options.Update().SetUpsert(true))
 }
