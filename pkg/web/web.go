@@ -30,7 +30,7 @@ func redirectHandler(url string) http.HandlerFunc {
 }
 
 func downloadHandler(w http.ResponseWriter, r *http.Request) {
-	version := core.GetConfig().DevBuildVersion
+	version := core.GetConfig().Version
 	devBuild := r.URL.Query().Get("devBuild")
 
 	if devBuild == "" {
@@ -40,6 +40,8 @@ func downloadHandler(w http.ResponseWriter, r *http.Request) {
 		db.IncrementDownloads()
 		return
 	}
+
+	version = core.GetConfig().DevBuildVersion
 
 	if devBuild == "latest" {
 		devBuild = db.GetGlobal().DevBuild
