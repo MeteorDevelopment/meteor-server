@@ -96,6 +96,7 @@ func Main() {
 		g.HandleFunc("/capes", api.CapesHandler)
 		g.HandleFunc("/stats", api.StatsHandler)
 		g.HandleFunc("/capeowners", api.CapeOwnersHandler)
+		g.HandleFunc("/setDevBuild", auth.Auth(api.SetDevBuildHandler)).Methods("POST")
 
 		{
 			// /api/account

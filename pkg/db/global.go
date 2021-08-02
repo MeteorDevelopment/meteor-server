@@ -14,3 +14,7 @@ func GetGlobal() Global {
 	global.FindOne(nil, bson.M{"id": "Stats"}).Decode(&g)
 	return g
 }
+
+func SetDevBuild(devBuild string) {
+	_, _ = global.UpdateOne(nil, bson.M{"id": "Stats"}, bson.M{"$set": bson.M{"devBuild": devBuild}})
+}
