@@ -65,7 +65,7 @@ func Main() {
 	r.PathPrefix("/capes").Handler(http.StripPrefix("/capes", http.FileServer(http.Dir("capes"))))
 
 	// Redirects
-	r.HandleFunc("/discord", redirectHandler("https://discord.com/invite/hv6nz7WScU")).Methods()
+	r.HandleFunc("/discord", redirectHandler("https://discord.com/invite/hv6nz7WScU"))
 	r.HandleFunc("/donate", redirectHandler("https://www.paypal.com/paypalme/MineGame159"))
 	r.HandleFunc("/youtube", redirectHandler("https://www.youtube.com/channel/UCWfwmiYGlXXunsUc1Zvz8SQ"))
 	r.HandleFunc("/github", redirectHandler("https://github.com/MeteorDevelopment"))
