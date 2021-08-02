@@ -234,6 +234,8 @@ func McAccountHandler(w http.ResponseWriter, r *http.Request) {
 		var user mcUser
 		_ = json.Unmarshal(body, &user)
 
+		_ = res.Body.Close()
+
 		id, err := uuid.Parse(user.Id)
 		if err != nil {
 			core.JsonError(w, "Invalid username.")
