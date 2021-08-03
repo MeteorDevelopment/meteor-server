@@ -61,6 +61,13 @@ func Main() {
 
 	r := mux.NewRouter()
 
+	r.Use(func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Connection", "close")
+			next.ServeHTTP(w, r)
+		})
+	})
+
 	r.PathPrefix("/static").Handler(http.StripPrefix("/static", http.FileServer(http.Dir("static"))))
 	r.PathPrefix("/capes").Handler(http.StripPrefix("/capes", http.FileServer(http.Dir("capes"))))
 
@@ -148,6 +155,7 @@ func Main() {
 		Handler:      handler,
 		WriteTimeout: 10 * time.Second,
 		ReadTimeout:  10 * time.Second,
+		IdleTimeout:  10 * time.Second,
 	}
 
 	fmt.Printf("Listening on %s\n", s.Addr)
