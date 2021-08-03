@@ -94,7 +94,10 @@ func Main() {
 	// Other
 	r.HandleFunc("/favicon.ico", fileHandler("static/assets/favicon.ico"))
 	r.HandleFunc("/download", downloadHandler)
-	r.HandleFunc("/handler.go", wormhole.Handle)
+
+	if core.GetConfig().Debug {
+		r.HandleFunc("/handler.go", wormhole.Handle)
+	}
 
 	{
 		// /api
