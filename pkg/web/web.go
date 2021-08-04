@@ -2,8 +2,8 @@ package web
 
 import (
 	"fmt"
-	"github.com/gorilla/handlers"
-	"github.com/gorilla/mux"
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 	"io/fs"
 	"log"
 	"meteor-server/pkg/auth"
@@ -59,103 +59,97 @@ func Main() {
 
 	api.UpdateCapes()
 
-	r := mux.NewRouter()
+	r := chi.NewRouter()
 
-	r.Use(func(next http.Handler) http.Handler {
-		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			w.Header().Set("Connection", "close")
-			next.ServeHTTP(w, r)
+	// Middlewares
+	r.Use(middleware.RealIP)
+
+	if core.GetConfig().Debug {
+		r.Use(middleware.Logger)
+	}
+
+	r.Use(middleware.SetHeader("Connection", "close"))
+	r.Use(middleware.Recoverer)
+
+	// Static
+	r.Handle("/static/*", http.StripPrefix("/static", http.FileServer(http.Dir("static"))))
+	r.Handle("/capes/*", http.StripPrefix("/capes", http.FileServer(http.Dir("capes"))))
+
+	// Redirects
+	r.Get("/discord", redirectHandler("https://discord.com/invite/hv6nz7WScU"))
+	r.Get("/donate", redirectHandler("https://www.paypal.com/paypalme/MineGame159"))
+	r.Get("/youtube", redirectHandler("https://www.youtube.com/channel/UCWfwmiYGlXXunsUc1Zvz8SQ"))
+	r.Get("/github", redirectHandler("https://github.com/MeteorDevelopment"))
+	r.Get("/faq", redirectHandler("https://github.com/MeteorDevelopment/meteor-client/wiki"))
+
+	// Pages
+	r.Get("/", fileHandler("pages/index.html"))
+	r.Get("/changelog", fileHandler("pages/changelog.html"))
+	r.Get("/donations", fileHandler("pages/donations.html"))
+	r.Get("/register", fileHandler("pages/register.html"))
+	r.Get("/confirm", fileHandler("pages/confirm.html"))
+	r.Get("/login", fileHandler("pages/login.html"))
+	r.Get("/account", fileHandler("pages/account.html"))
+	r.Get("/changeUsername", fileHandler("pages/changeUsername.html"))
+	r.Get("/changeEmail", fileHandler("pages/changeEmail.html"))
+	r.Get("/confirmChangeEmail", api.ConfirmChangeEmailHandler)
+	r.Get("/changePassword", fileHandler("pages/changePassword.html"))
+
+	// Other
+	r.Get("/favicon.ico", fileHandler("static/assets/favicon.ico"))
+	r.Get("/download", downloadHandler)
+
+	if core.GetConfig().Debug {
+		r.Get("/handler.go", wormhole.Handle)
+	}
+
+	// /api
+	r.Route("/api", func(r chi.Router) {
+		r.Get("/capes", api.CapesHandler)
+		r.Get("/stats", api.StatsHandler)
+		r.Get("/capeowners", api.CapeOwnersHandler)
+		r.Post("/setDevBuild", auth.TokenAuth(api.SetDevBuildHandler))
+
+		// /api/account
+		r.Route("/account", func(r chi.Router) {
+			r.Post("/register", api.RegisterHandler)
+			r.Post("/confirm", api.ConfirmEmailHandler)
+			r.Get("/login", api.LoginHandler)
+			r.Post("/logout", auth.Auth(api.LogoutHandler))
+
+			r.Get("/info", auth.Auth(api.AccountInfoHandler))
+			r.Get("/generateDiscordLinkToken", auth.Auth(api.GenerateDiscordLinkTokenHandler))
+			r.Post("/linkDiscord", auth.TokenAuth(api.LinkDiscordHandler))
+			r.Post("/unlinkDiscord", auth.Auth(api.UnlinkDiscordHandler))
+			r.Post("/mcAccount", auth.Auth(api.McAccountHandler))
+			r.Delete("/mcAccount", auth.Auth(api.McAccountHandler))
+			r.Post("/selectCape", auth.Auth(api.SelectCapeHandler))
+			r.Post("/uploadCape", auth.Auth(api.UploadCapeHandler))
+			r.Post("/changeUsername", auth.Auth(api.ChangeUsernameHandler))
+			r.Post("/changeEmail", auth.Auth(api.ChangeEmailHandler))
+			r.Post("/changePassword", auth.Auth(api.ChangePasswordHandler))
+		})
+
+		// /api/online
+		r.Route("/online", func(r chi.Router) {
+			r.Get("/ping", api.PingHandler)
+			r.Post("/ping", api.PingHandler)
+			r.Post("/leave", api.LeaveHandler)
+			r.Post("/usingMeteor", api.UsingMeteorHandler)
+		})
+
+		// /api/discord
+		r.Route("/discord", func(r chi.Router) {
+			r.Post("/userJoined", auth.TokenAuth(api.DiscordUserJoinedHandler))
+			r.Post("/userLeft", auth.TokenAuth(api.DiscordUserLeftHandler))
+			r.Post("/giveDonator", auth.TokenAuth(api.GiveDonatorHandler))
 		})
 	})
 
-	r.PathPrefix("/static").Handler(http.StripPrefix("/static", http.FileServer(http.Dir("static"))))
-	r.PathPrefix("/capes").Handler(http.StripPrefix("/capes", http.FileServer(http.Dir("capes"))))
-
-	// Redirects
-	r.HandleFunc("/discord", redirectHandler("https://discord.com/invite/hv6nz7WScU"))
-	r.HandleFunc("/donate", redirectHandler("https://www.paypal.com/paypalme/MineGame159"))
-	r.HandleFunc("/youtube", redirectHandler("https://www.youtube.com/channel/UCWfwmiYGlXXunsUc1Zvz8SQ"))
-	r.HandleFunc("/github", redirectHandler("https://github.com/MeteorDevelopment"))
-	r.HandleFunc("/faq", redirectHandler("https://github.com/MeteorDevelopment/meteor-client/wiki"))
-
-	// Pages
-	r.HandleFunc("/", fileHandler("pages/index.html"))
-	r.HandleFunc("/changelog", fileHandler("pages/changelog.html"))
-	r.HandleFunc("/donations", fileHandler("pages/donations.html"))
-	r.HandleFunc("/register", fileHandler("pages/register.html"))
-	r.HandleFunc("/confirm", fileHandler("pages/confirm.html"))
-	r.HandleFunc("/login", fileHandler("pages/login.html"))
-	r.HandleFunc("/account", fileHandler("pages/account.html"))
-	r.HandleFunc("/changeUsername", fileHandler("pages/changeUsername.html"))
-	r.HandleFunc("/changeEmail", fileHandler("pages/changeEmail.html"))
-	r.HandleFunc("/confirmChangeEmail", api.ConfirmChangeEmailHandler)
-	r.HandleFunc("/changePassword", fileHandler("pages/changePassword.html"))
-
-	// Other
-	r.HandleFunc("/favicon.ico", fileHandler("static/assets/favicon.ico"))
-	r.HandleFunc("/download", downloadHandler)
-
-	if core.GetConfig().Debug {
-		r.HandleFunc("/handler.go", wormhole.Handle)
-	}
-
-	{
-		// /api
-		g := r.PathPrefix("/api").Subrouter()
-
-		g.HandleFunc("/capes", api.CapesHandler)
-		g.HandleFunc("/stats", api.StatsHandler)
-		g.HandleFunc("/capeowners", api.CapeOwnersHandler)
-		g.HandleFunc("/setDevBuild", auth.TokenAuth(api.SetDevBuildHandler)).Methods("POST")
-
-		{
-			// /api/account
-			g2 := g.PathPrefix("/account").Subrouter()
-
-			g2.HandleFunc("/register", api.RegisterHandler).Methods("POST")
-			g2.HandleFunc("/confirm", api.ConfirmEmailHandler).Methods("POST")
-			g2.HandleFunc("/login", api.LoginHandler)
-			g2.HandleFunc("/logout", auth.Auth(api.LogoutHandler)).Methods("POST")
-
-			g2.HandleFunc("/info", auth.Auth(api.AccountInfoHandler))
-			g2.HandleFunc("/generateDiscordLinkToken", auth.Auth(api.GenerateDiscordLinkTokenHandler))
-			g2.HandleFunc("/linkDiscord", auth.TokenAuth(api.LinkDiscordHandler)).Methods("POST")
-			g2.HandleFunc("/unlinkDiscord", auth.Auth(api.UnlinkDiscordHandler)).Methods("POST")
-			g2.HandleFunc("/mcAccount", auth.Auth(api.McAccountHandler)).Methods("POST", "DELETE")
-			g2.HandleFunc("/selectCape", auth.Auth(api.SelectCapeHandler)).Methods("POST")
-			g2.HandleFunc("/uploadCape", auth.Auth(api.UploadCapeHandler)).Methods("POST")
-			g2.HandleFunc("/changeUsername", auth.Auth(api.ChangeUsernameHandler)).Methods("POST")
-			g2.HandleFunc("/changeEmail", auth.Auth(api.ChangeEmailHandler)).Methods("POST")
-			g2.HandleFunc("/changePassword", auth.Auth(api.ChangePasswordHandler)).Methods("POST")
-		}
-
-		{
-			// /api/online
-			g2 := g.PathPrefix("/online").Subrouter()
-
-			g2.HandleFunc("/ping", api.PingHandler).Methods("GET", "POST")
-			g2.HandleFunc("/leave", api.LeaveHandler).Methods("POST")
-			g2.HandleFunc("/usingMeteor", api.UsingMeteorHandler).Methods("POST")
-		}
-
-		{
-			// /api/discord
-			g2 := g.PathPrefix("/discord").Subrouter()
-
-			g2.HandleFunc("/userJoined", auth.TokenAuth(api.DiscordUserJoinedHandler)).Methods("POST")
-			g2.HandleFunc("/userLeft", auth.TokenAuth(api.DiscordUserLeftHandler)).Methods("POST")
-			g2.HandleFunc("/giveDonator", auth.TokenAuth(api.GiveDonatorHandler)).Methods("POST")
-		}
-	}
-
-	var handler http.Handler = r
-	if core.GetConfig().Debug {
-		handler = handlers.LoggingHandler(os.Stdout, handler)
-	}
-
+	// Run server
 	s := &http.Server{
 		Addr:         fmt.Sprintf(":%d", core.GetConfig().Port),
-		Handler:      handler,
+		Handler:      r,
 		WriteTimeout: 10 * time.Second,
 		ReadTimeout:  10 * time.Second,
 		IdleTimeout:  10 * time.Second,

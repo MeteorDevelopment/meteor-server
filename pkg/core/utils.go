@@ -45,15 +45,6 @@ func IsEmailValid(email string) bool {
 	return true
 }
 
-func IP(r *http.Request) string {
-	if ip := r.Header.Get("X-Forwarded-For"); ip != "" {
-		return ip
-	}
-
-	ip, _, _ := net.SplitHostPort(r.RemoteAddr)
-	return ip
-}
-
 func Json(w http.ResponseWriter, v interface{}) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
