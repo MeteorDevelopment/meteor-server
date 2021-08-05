@@ -71,6 +71,7 @@ func ConfirmEmail(token ksuid.KSUID) bool {
 	clearConfirmEmails()
 	confirmEmail, exists := confirmEmails[token]
 	if !exists {
+		cetMu.Unlock()
 		return false
 	}
 
@@ -109,11 +110,13 @@ func Login(name string, password string) (string, error) {
 
 	bytes, err := json.Marshal(Claims{TokenID: tokenCount, AccountID: account.ID})
 	if err != nil {
+		mu.Unlock()
 		return "", err
 	}
 
 	token, err := jose.Sign(string(bytes), jose.HS256, jwtKey)
 	if err != nil {
+		mu.Unlock()
 		return "", err
 	}
 
