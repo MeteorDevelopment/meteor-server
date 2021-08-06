@@ -76,7 +76,7 @@ func Main() {
 	r.Handle("/capes/*", http.StripPrefix("/capes", http.FileServer(http.Dir("capes"))))
 
 	// Redirects
-	r.Get("/discord", redirectHandler("https://discord.com/invite/hv6nz7WScU"))
+	r.Get("/discord", redirectHandler("https://discord.com/invite/bBGQZvd"))
 	r.Get("/donate", redirectHandler("https://www.paypal.com/paypalme/MineGame159"))
 	r.Get("/youtube", redirectHandler("https://www.youtube.com/channel/UCWfwmiYGlXXunsUc1Zvz8SQ"))
 	r.Get("/github", redirectHandler("https://github.com/MeteorDevelopment"))
