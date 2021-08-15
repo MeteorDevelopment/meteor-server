@@ -97,6 +97,7 @@ func Main() {
 
 	// Other
 	r.Get("/favicon.ico", fileHandler("static/assets/favicon.ico"))
+	r.Get("/icon.png", fileHandler("static/assets/icon.png"))
 	r.Get("/download", downloadHandler)
 
 	if core.GetConfig().Debug {
