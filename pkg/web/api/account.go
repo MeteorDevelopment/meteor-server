@@ -43,13 +43,14 @@ type passwordChangeInfo struct {
 	data      string
 }
 
-type discordLinkInfo struct {
+type accountTimeInfo struct {
 	accountId ksuid.KSUID
 	time      time.Time
 }
 
 var changeEmailTokens = make(map[ksuid.KSUID]passwordChangeInfo)
-var discordLinkTokens = make(map[ksuid.KSUID]discordLinkInfo)
+var discordLinkTokens = make(map[ksuid.KSUID]accountTimeInfo)
+var forgotPasswordTokens = make(map[ksuid.KSUID]accountTimeInfo)
 
 func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	q := r.URL.Query()
@@ -149,7 +150,7 @@ func GenerateDiscordLinkTokenHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	token := ksuid.New()
-	discordLinkTokens[token] = discordLinkInfo{account.ID, time.Now()}
+	discordLinkTokens[token] = accountTimeInfo{account.ID, time.Now()}
 
 	core.Json(w, core.J{"token": token})
 }
@@ -439,9 +440,8 @@ func ConfirmChangeEmailHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	delete(changeEmailTokens, token)
 	if time.Now().Sub(info.time).Minutes() > 15 {
-		delete(changeEmailTokens, token)
-
 		core.JsonError(w, "Outdated token.")
 		return
 	}
@@ -486,5 +486,71 @@ func ChangePasswordHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	core.Json(w, core.J{})
+}
+
+func ChangePasswordTokenHandler(w http.ResponseWriter, r *http.Request) {
+	// Validate token
+	tokenRaw := r.URL.Query().Get("token")
+	token, err := ksuid.Parse(tokenRaw)
+	if err != nil {
+		core.JsonError(w, "Invalid token.")
+		return
+	}
+
+	info, exists := forgotPasswordTokens[token]
+	if !exists {
+		core.JsonError(w, "Invalid token.")
+		return
+	}
+
+	delete(forgotPasswordTokens, token)
+	if time.Now().Sub(info.time).Minutes() > 15 {
+
+		core.JsonError(w, "Outdated token.")
+		return
+	}
+
+	// Get account
+	account, err := db.GetAccountId(info.accountId)
+	if err != nil {
+		core.JsonError(w, "Invalid token.")
+		return
+	}
+
+	// Validate new password
+	newPass := r.URL.Query().Get("new")
+	if newPass == "" || strings.ContainsRune(newPass, ' ') {
+		core.JsonError(w, "Invalid new password.")
+		return
+	}
+
+	// Change password
+	err = account.SetPassword(newPass)
+	if err != nil {
+		core.JsonError(w, "Invalid password.")
+		return
+	}
+
+	core.Json(w, core.J{})
+}
+
+func ForgotPasswordHandler(w http.ResponseWriter, r *http.Request) {
+	email := r.URL.Query().Get("email")
+	if email == "" {
+		core.JsonError(w, "Invalid email.")
+		return
+	}
+
+	account, err := db.GetAccountWithEmail(email)
+	if err != nil {
+		core.JsonError(w, "Invalid email.")
+		return
+	}
+
+	token := ksuid.New()
+	forgotPasswordTokens[token] = accountTimeInfo{account.ID, time.Now()}
+
+	core.SendEmail(email, "Forgot password", "To change the password to "+email+" go to https://meteorclient.com/changePassword?token="+token.String()+". The link is valid for 15 minutes.")
 	core.Json(w, core.J{})
 }

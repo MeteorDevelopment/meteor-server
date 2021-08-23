@@ -94,6 +94,7 @@ func Main() {
 	r.Get("/changeEmail", fileHandler("pages/changeEmail.html"))
 	r.Get("/confirmChangeEmail", api.ConfirmChangeEmailHandler)
 	r.Get("/changePassword", fileHandler("pages/changePassword.html"))
+	r.Get("/forgotPassword", fileHandler("pages/forgotPassword.html"))
 
 	// Other
 	r.Get("/favicon.ico", fileHandler("static/assets/favicon.ico"))
@@ -116,6 +117,7 @@ func Main() {
 			r.Post("/register", api.RegisterHandler)
 			r.Post("/confirm", api.ConfirmEmailHandler)
 			r.Get("/login", api.LoginHandler)
+			r.Post("/forgotPassword", api.ForgotPasswordHandler)
 			r.Post("/logout", auth.Auth(api.LogoutHandler))
 
 			r.Get("/info", auth.Auth(api.AccountInfoHandler))
@@ -129,6 +131,7 @@ func Main() {
 			r.Post("/changeUsername", auth.Auth(api.ChangeUsernameHandler))
 			r.Post("/changeEmail", auth.Auth(api.ChangeEmailHandler))
 			r.Post("/changePassword", auth.Auth(api.ChangePasswordHandler))
+			r.Post("/changePasswordToken", api.ChangePasswordTokenHandler)
 		})
 
 		// /api/online
