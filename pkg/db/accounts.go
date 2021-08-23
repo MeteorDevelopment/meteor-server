@@ -46,15 +46,15 @@ func NewAccount(username string, email string, password string) error {
 		Password: pass,
 
 		Admin:   false,
-		Donator: true,
+		Donator: false,
 
 		DiscordID: "",
 
 		MaxMcAccounts: 1,
 		McAccounts:    []uuid.UUID{},
 
-		Cape:              "donator",
-		CanHaveCustomCape: true,
+		Cape:              "",
+		CanHaveCustomCape: false,
 	})
 
 	return err
