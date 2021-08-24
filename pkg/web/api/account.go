@@ -186,7 +186,12 @@ func LinkDiscordHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Link
 	id := r.URL.Query().Get("id")
-	account.LinkDiscord(id)
+
+	err = account.LinkDiscord(id)
+	if err != nil {
+		core.JsonError(w, err.Error())
+		return
+	}
 
 	core.Json(w, core.J{})
 }

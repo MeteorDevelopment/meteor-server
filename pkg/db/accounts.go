@@ -124,7 +124,16 @@ func (acc *Account) PasswordMatches(password string) bool {
 	return bcrypt.CompareHashAndPassword(acc.Password, []byte(password)) == nil
 }
 
-func (acc *Account) LinkDiscord(id string) {
+func (acc *Account) LinkDiscord(id string) error {
+	_, err := GetAccountDiscordId(id)
+	if err == nil {
+		return errors.New("Discord account already linked.")
+	}
+
+	if acc.DiscordID != "" {
+		discord.RemoveRole(acc.DiscordID, discord.AccountRole)
+	}
+
 	_, _ = accounts.UpdateOne(nil, bson.M{"id": acc.ID}, bson.M{"$set": bson.M{"discord_id": id}})
 
 	if discord.HasRole(id, discord.DonatorRole) && !acc.Donator {
@@ -132,6 +141,7 @@ func (acc *Account) LinkDiscord(id string) {
 	}
 
 	discord.AddRole(id, discord.AccountRole)
+	return nil
 }
 
 func (acc *Account) UnlinkDiscord() {
