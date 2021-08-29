@@ -130,6 +130,10 @@ func (acc *Account) LinkDiscord(id string) error {
 		return errors.New("Discord account already linked.")
 	}
 
+	if discord.HasRole(id, discord.MutedRole) {
+		return errors.New("Cannot link that account because it is muted.")
+	}
+
 	if acc.DiscordID != "" {
 		discord.RemoveRole(acc.DiscordID, discord.AccountRole)
 	}

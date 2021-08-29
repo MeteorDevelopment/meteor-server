@@ -20,6 +20,7 @@ type member struct {
 const (
 	guildId = "689197705683140636"
 
+	MutedRole   = "741016178155192432"
 	AccountRole = "777248653445300264"
 	DonatorRole = "689205464574984353"
 )
