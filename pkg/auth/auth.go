@@ -3,6 +3,7 @@ package auth
 import (
 	"encoding/json"
 	"errors"
+	"math/rand"
 	"strings"
 	"sync"
 	"time"
@@ -26,8 +27,7 @@ type ConfirmEmailStruct struct {
 	Time     time.Time
 }
 
-// TODO: Randomly generate the key on each startup
-var jwtKey = []byte{97, 48, 97, 50, 97, 98, 100, 56, 45, 54, 49, 54, 50, 45, 52, 49, 99, 51, 45, 56, 51, 100, 54, 45, 49, 99, 102, 53, 53, 57, 98, 52, 54, 97, 102, 99}
+var jwtKey []byte
 
 var tokenCount = 0
 var tokens = make(map[ksuid.KSUID]int)
@@ -35,6 +35,12 @@ var mu = sync.RWMutex{}
 
 var confirmEmails = make(map[ksuid.KSUID]ConfirmEmailStruct)
 var cetMu = sync.RWMutex{}
+
+func Init() {
+	jwtKey = make([]byte, 36)
+	rand.Seed(time.Now().UnixNano())
+	rand.Read(jwtKey)
+}
 
 func Register(username string, email string, password string) error {
 	if username == "" || strings.ContainsRune(username, ' ') || email == "" || strings.ContainsRune(email, ' ') || password == "" || strings.ContainsRune(password, ' ') {
