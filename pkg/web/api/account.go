@@ -246,7 +246,7 @@ func McAccountHandler(w http.ResponseWriter, r *http.Request) {
 
 		id, err := uuid.Parse(user.Id)
 		if err != nil {
-			core.JsonError(w, "Invalid username 3.")
+			core.JsonError(w, "Invalid username 3. "+err.Error())
 			return
 		}
 
