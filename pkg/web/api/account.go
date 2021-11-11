@@ -3,7 +3,6 @@ package api
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/google/uuid"
 	"image"
 	_ "image/png"
 	"io"
@@ -14,10 +13,13 @@ import (
 	"strings"
 	"time"
 
-	"github.com/segmentio/ksuid"
+	"github.com/google/uuid"
+
 	"meteor-server/pkg/auth"
 	"meteor-server/pkg/core"
 	"meteor-server/pkg/db"
+
+	"github.com/segmentio/ksuid"
 )
 
 type capeInfo struct {
@@ -221,7 +223,7 @@ func McAccountHandler(w http.ResponseWriter, r *http.Request) {
 		// Get Minecraft username
 		username := r.URL.Query().Get("username")
 		if username == "" {
-			core.JsonError(w, "Invalid username.")
+			core.JsonError(w, "Invalid username 1.")
 			return
 		}
 
@@ -232,7 +234,7 @@ func McAccountHandler(w http.ResponseWriter, r *http.Request) {
 		client := http.Client{}
 		res, err := client.Do(req)
 		if err != nil {
-			core.JsonError(w, "Invalid username.")
+			core.JsonError(w, "Invalid username 2.")
 			return
 		}
 
@@ -244,7 +246,7 @@ func McAccountHandler(w http.ResponseWriter, r *http.Request) {
 
 		id, err := uuid.Parse(user.Id)
 		if err != nil {
-			core.JsonError(w, "Invalid username.")
+			core.JsonError(w, "Invalid username 3.")
 			return
 		}
 
