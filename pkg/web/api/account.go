@@ -240,13 +240,14 @@ func McAccountHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		body, _ := ioutil.ReadAll(res.Body)
+		fmt.Println(res.Status)
+		fmt.Println(string(body))
 		var user mcUser
 		_ = json.Unmarshal(body, &user)
 
 		_ = res.Body.Close()
 
 		id, err := uuid.Parse(user.Id)
-		fmt.Println(user.Id)
 		if err != nil {
 			core.JsonError(w, "Invalid username 3. "+err.Error())
 			return
