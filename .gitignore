@@ -3,3 +3,5 @@ out
 
 capes
 private_config.json
+
+*.exe

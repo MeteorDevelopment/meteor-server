@@ -3,7 +3,6 @@ package api
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"image"
 	_ "image/png"
 	"io"
@@ -229,7 +228,7 @@ func McAccountHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Get uuid
-		req, _ := http.NewRequest("GET", "https://mc-heads.net/minecraft/profile/"+username, bytes.NewReader([]byte{}))
+		req, _ := http.NewRequest("GET", "https://api.mojang.com/users/profiles/minecraft/"+username, bytes.NewReader([]byte{}))
 		req.Header.Set("User-Agent", "Meteor Server")
 
 		client := http.Client{}
@@ -240,8 +239,6 @@ func McAccountHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		body, _ := ioutil.ReadAll(res.Body)
-		fmt.Println(res.Status)
-		fmt.Println(string(body))
 		var user mcUser
 		_ = json.Unmarshal(body, &user)
 
