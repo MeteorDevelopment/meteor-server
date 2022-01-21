@@ -11,7 +11,7 @@ var playing = make(map[string]time.Time)
 var uuids = make(map[string]string)
 
 func PingHandler(w http.ResponseWriter, r *http.Request) {
-	ip := r.RemoteAddr
+	ip := core.IP(r)
 	playing[ip] = time.Now()
 
 	id := r.URL.Query().Get("uuid")
@@ -21,7 +21,7 @@ func PingHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func LeaveHandler(w http.ResponseWriter, r *http.Request) {
-	ip := r.RemoteAddr
+	ip := core.IP(r)
 
 	delete(playing, ip)
 	delete(uuids, ip)
