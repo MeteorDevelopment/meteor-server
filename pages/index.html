@@ -19,7 +19,7 @@
 
     <!--Stylesheets-->
     <script src="https://kit.fontawesome.com/d5536945b2.js" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="/static/css/main.css"/>
+    <link rel="stylesheet" id="maincss" href="/static/css/main.css"/>
     <link rel="stylesheet" href="/static/css/elements/button.css"/>
     <link rel="stylesheet" href="/static/css/elements/card.css"/>
     <link rel="stylesheet" href="/static/css/elements/footer.css"/>
@@ -40,6 +40,9 @@
             <li><a href="/faq">FAQ</a></li>
             <li><a href="/changelog">Changelog</a></li>
             <li><a href="/account">Account</a></li>
+            <li><button id="dark-mode-toggle" class="dark-mode-toggle">
+                <svg width="100%" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 496"><path fill="currentColor" d="M8,256C8,393,119,504,256,504S504,393,504,256,393,8,256,8,8,119,8,256ZM256,440V72a184,184,0,0,1,0,368Z" transform="translate(-8 -8)"/></svg>
+            </button></li>
         </ul>
         <div class="burger">
             <div class="line1"></div>
@@ -128,10 +131,10 @@
                 <path id="gentle-wave" d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z" />
             </defs>
             <g class="parallax">
-                <use xlink:href="#gentle-wave" x="48" y="0" fill="#2a2a36" />
-                <use xlink:href="#gentle-wave" x="48" y="3" fill="#23232e" />
-                <use xlink:href="#gentle-wave" x="48" y="5" fill="#21212b" />
-                <use xlink:href="#gentle-wave" x="48" y="7" fill="#1B1B23" />
+                <use xlink:href="#gentle-wave" x="48" y="0" fill="var(--wave1)" />
+                <use xlink:href="#gentle-wave" x="48" y="3" fill="var(--wave2)" />
+                <use xlink:href="#gentle-wave" x="48" y="5" fill="var(--wave3)" />
+                <use xlink:href="#gentle-wave" x="48" y="7" fill="var(--wave4)" />
             </g>
         </svg>
     </div>
@@ -205,11 +208,12 @@
     <!--Footer-->
     <div class="footer">
         <div class="footer-sec-1">Copyright &copy; 2021 meteorclient.com | All Rights Reserved.</div>
-        <div class="footer-sec-3">Designed by <a href="https://github.com/seasnail8169" target="_blank">seasnail8169</a>.</div>
+        <div class="footer-sec-3">Designed by <a href="https://github.com/seasnail8169" target="_blank">seasnail8169</a>. Dark mode by <a href="https://github.com/codekid0" target="_blank">CodeKid0</a></div>
     </div>
 
     <script src="/static/js/core.js"></script>
     <script src="/static/js/index.js"></script>
     <script src="/static/js/navbar.js"></script>
+    <script src="/static/js/darktheme.js"></script>
 </body>
 </html>

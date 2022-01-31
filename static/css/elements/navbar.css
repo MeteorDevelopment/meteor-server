@@ -11,11 +11,11 @@
   background: var(--accent);
 }
 
-.nav-links a {
+.nav-links a, .dark-mode-toggle {
   color: var(--text-light);
 }
 
-.nav-links a:hover {
+.nav-links a:hover, .dark-mode-toggle:hover {
   color: var(--text-alt);
 }
 
@@ -109,4 +109,19 @@
 }
 .toggle .line3 {
   transform: rotate(-45deg) translateY(-7px);
+}
+
+/* darkmode toggle */
+
+.dark-mode-toggle {
+  z-index: 100;
+  top: 1em;
+  right: 1em;
+  border: 2px solid currentColor;
+  padding: 4px;
+  background: transparent;
+  cursor: pointer;
+  border-radius: 5px;
+  width: 1.7rem;
+  height: 1.7rem;
 }
