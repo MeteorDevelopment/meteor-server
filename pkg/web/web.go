@@ -32,22 +32,21 @@ func redirectHandler(url string) http.HandlerFunc {
 func downloadHandler(w http.ResponseWriter, r *http.Request) {
 	version := core.GetConfig().Version
 	devBuild := r.URL.Query().Get("devBuild")
+	url := ""
 
-	if devBuild == "" {
-		w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=meteor-client-%s.jar", version))
-		http.ServeFile(w, r, fmt.Sprintf("jars/meteor-client-%s.jar", version))
+	if devBuild != "" {
+		version = core.GetConfig().DevBuildVersion
 
-		db.IncrementDownloads()
-		return
+		if devBuild == "latest" {
+			devBuild = core.GetConfig().DevBuildVersion
+		}
+
+		url = fmt.Sprintf("https://%s-309730396-gh.circle-artifacts.com/0/build/libs/meteor-client-%s-%s.jar", devBuild, version, devBuild)
+	} else {
+		url = fmt.Sprintf("https://maven.meteordev.org/releases/meteordevelopment/meteor-client/%s/meteor-client-%s.jar", version, version)
 	}
 
-	version = core.GetConfig().DevBuildVersion
-
-	if devBuild == "latest" {
-		devBuild = db.GetGlobal().DevBuild
-	}
-
-	http.Redirect(w, r, fmt.Sprintf("https://%s-309730396-gh.circle-artifacts.com/0/build/libs/meteor-client-%s-%s.jar", devBuild, version, devBuild), http.StatusPermanentRedirect)
+	http.Redirect(w, r, url, http.StatusPermanentRedirect)
 	db.IncrementDownloads()
 }
 
