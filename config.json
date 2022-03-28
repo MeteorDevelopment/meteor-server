@@ -4,6 +4,7 @@
   "version": "0.4.7",
   "dev_build_version": "0.4.8",
   "mc_version": "1.18.1",
+  "max_dev_builds": 10,
   "changelog": [
     "Added .waypoint command",
     "Rewrote Surround",

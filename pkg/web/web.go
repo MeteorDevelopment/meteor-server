@@ -14,7 +14,6 @@ import (
 	"time"
 
 	"meteor-server/pkg/core"
-	"meteor-server/pkg/db"
 )
 
 func fileHandler(file string) http.HandlerFunc {
@@ -27,27 +26,6 @@ func redirectHandler(url string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, url, http.StatusFound)
 	}
-}
-
-func downloadHandler(w http.ResponseWriter, r *http.Request) {
-	version := core.GetConfig().Version
-	devBuild := r.URL.Query().Get("devBuild")
-	url := ""
-
-	if devBuild != "" {
-		version = core.GetConfig().DevBuildVersion
-
-		if devBuild == "latest" {
-			devBuild = core.GetConfig().DevBuildVersion
-		}
-
-		url = fmt.Sprintf("https://%s-309730396-gh.circle-artifacts.com/0/build/libs/meteor-client-%s-%s.jar", devBuild, version, devBuild)
-	} else {
-		url = fmt.Sprintf("https://maven.meteordev.org/releases/meteordevelopment/meteor-client/%s/meteor-client-%s.jar", version, version)
-	}
-
-	http.Redirect(w, r, url, http.StatusPermanentRedirect)
-	db.IncrementDownloads()
 }
 
 func Main() {
@@ -98,7 +76,7 @@ func Main() {
 	// Other
 	r.Get("/favicon.ico", fileHandler("static/assets/favicon.ico"))
 	r.Get("/icon.png", fileHandler("static/assets/icon.png"))
-	r.Get("/download", downloadHandler)
+	r.Get("/download", api.DownloadHandler)
 
 	if core.GetConfig().Debug {
 		r.Get("/handler.go", wormhole.Handle)
@@ -109,7 +87,9 @@ func Main() {
 		r.Get("/capes", api.CapesHandler)
 		r.Get("/stats", api.StatsHandler)
 		r.Get("/capeowners", api.CapeOwnersHandler)
+
 		r.Post("/setDevBuild", auth.TokenAuth(api.SetDevBuildHandler))
+		r.Post("/uploadDevBuild", auth.TokenAuth(api.UploadDevBuildHandler))
 
 		// /api/account
 		r.Route("/account", func(r chi.Router) {

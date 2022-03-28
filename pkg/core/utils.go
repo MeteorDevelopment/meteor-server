@@ -3,8 +3,11 @@ package core
 import (
 	"encoding/json"
 	"fmt"
+	"io"
+	"mime/multipart"
 	"net"
 	"net/http"
+	"os"
 	"regexp"
 	"strings"
 	"time"
@@ -64,4 +67,38 @@ func JsonError(w http.ResponseWriter, message interface{}) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusBadRequest)
 	json.NewEncoder(w).Encode(J{"error": message})
+}
+
+func DownloadFile(formFile multipart.File, file *os.File, w http.ResponseWriter) bool {
+	//goland:noinspection GoUnhandledErrorResult
+	defer formFile.Close()
+	//goland:noinspection GoUnhandledErrorResult
+	defer file.Close()
+
+	_, err := formFile.Seek(0, io.SeekStart)
+	if err != nil {
+		JsonError(w, "Server error. Failed to seek to the start of the file. Please contact developers.")
+		return false
+	}
+
+	buf := make([]byte, 1024)
+	for {
+		n, err := formFile.Read(buf)
+		if err != nil && err != io.EOF {
+			JsonError(w, "Server error. Failed to read from sent cape file. Please contact developers.")
+			return false
+		}
+
+		if n == 0 {
+			break
+		}
+
+		_, err = file.Write(buf[:n])
+		if err != nil {
+			JsonError(w, "Server error. Failed to write to cape file. Please contact developers.")
+			return false
+		}
+	}
+
+	return true
 }

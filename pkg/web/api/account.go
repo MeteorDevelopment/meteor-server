@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"image"
 	_ "image/png"
-	"io"
 	"io/ioutil"
 	"meteor-server/pkg/discord"
 	"net/http"
@@ -337,32 +336,9 @@ func UploadCapeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err = formFile.Seek(0, io.SeekStart)
-	if err != nil {
-		core.JsonError(w, "Server error. Failed to seek to the start of the file. Please contact developers.")
+	if !core.DownloadFile(formFile, file, w) {
 		return
 	}
-
-	buf := make([]byte, 1024)
-	for {
-		n, err := formFile.Read(buf)
-		if err != nil && err != io.EOF {
-			core.JsonError(w, "Server error. Failed to read from sent cape file. Please contact developers.")
-			return
-		}
-
-		if n == 0 {
-			break
-		}
-
-		_, err = file.Write(buf[:n])
-		if err != nil {
-			core.JsonError(w, "Server error. Failed to write to cape file. Please contact developers.")
-			return
-		}
-	}
-
-	_ = file.Close()
 
 	cape := db.Cape{ID: "account_" + account.ID.String(), Url: "https://meteorclient.com/" + file.Name()}
 	db.InsertCape(cape)

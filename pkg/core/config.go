@@ -12,6 +12,7 @@ type Config struct {
 	Version         string   `json:"version"`
 	DevBuildVersion string   `json:"dev_build_version"`
 	McVersion       string   `json:"mc_version"`
+	MaxDevBuilds    int      `json:"max_dev_builds"`
 	Changelog       []string `json:"changelog"`
 }
 

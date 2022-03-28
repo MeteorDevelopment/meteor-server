@@ -3,5 +3,6 @@ out
 
 capes
 private_config.json
+dev_builds
 
 *.exe
