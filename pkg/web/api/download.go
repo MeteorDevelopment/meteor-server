@@ -14,7 +14,6 @@ import (
 func DownloadHandler(w http.ResponseWriter, r *http.Request) {
 	version := core.GetConfig().Version
 	devBuild := r.URL.Query().Get("devBuild")
-	url := ""
 
 	if devBuild != "" {
 		version = core.GetConfig().DevBuildVersion
@@ -23,12 +22,12 @@ func DownloadHandler(w http.ResponseWriter, r *http.Request) {
 			devBuild = core.GetConfig().DevBuildVersion
 		}
 
-		http.ServeFile(w, r, fmt.Sprintf("meteor-client-%s-%s.jar", version, devBuild))
+		http.ServeFile(w, r, fmt.Sprintf("dev_builds/meteor-client-%s-%s.jar", version, devBuild))
 	} else {
-		url = fmt.Sprintf("https://maven.meteordev.org/releases/meteordevelopment/meteor-client/%s/meteor-client-%s.jar", version, version)
+		url := fmt.Sprintf("https://maven.meteordev.org/releases/meteordevelopment/meteor-client/%s/meteor-client-%s.jar", version, version)
+		http.Redirect(w, r, url, http.StatusPermanentRedirect)
 	}
 
-	http.Redirect(w, r, url, http.StatusPermanentRedirect)
 	db.IncrementDownloads()
 }
 
