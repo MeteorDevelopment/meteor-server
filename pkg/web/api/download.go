@@ -19,7 +19,7 @@ func DownloadHandler(w http.ResponseWriter, r *http.Request) {
 		version = core.GetConfig().DevBuildVersion
 
 		if devBuild == "latest" {
-			devBuild = core.GetConfig().DevBuildVersion
+			devBuild = db.GetGlobal().DevBuild
 		}
 
 		w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=meteor-client-%s-%s.jar", version, devBuild))
