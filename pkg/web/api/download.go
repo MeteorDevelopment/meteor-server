@@ -7,8 +7,8 @@ import (
 	"meteor-server/pkg/db"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
-	"time"
 )
 
 func DownloadHandler(w http.ResponseWriter, r *http.Request) {
@@ -60,14 +60,15 @@ func UploadDevBuildHandler(w http.ResponseWriter, r *http.Request) {
 	files, _ := ioutil.ReadDir("dev_builds")
 
 	if len(files) > core.GetConfig().MaxDevBuilds {
-		oldestTime := time.Now()
+		oldestBuild := 6666
 		oldest := ""
 
 		for _, file := range files {
-			time_ := file.ModTime()
+			s := strings.TrimSuffix(file.Name(), ".jar")
+			build, _ := strconv.Atoi(s[strings.LastIndex(s, "-")+1:])
 
-			if time_.Before(oldestTime) {
-				oldestTime = time_
+			if build < oldestBuild {
+				oldestBuild = build
 				oldest = file.Name()
 			}
 		}
