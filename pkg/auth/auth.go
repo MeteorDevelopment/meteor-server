@@ -68,7 +68,7 @@ func Register(username string, email string, password string) error {
 	confirmEmails[token] = ConfirmEmailStruct{Token: token, Username: username, Email: email, Password: password, Time: time.Now()}
 	cetMu.Unlock()
 
-	core.SendEmail(email, "Confirm email to register", "To complete the registration go to https://meteorclient.com/confirm?token="+token.String()+". The link is valid for 15 minutes.")
+	core.SendEmail(email, "Confirm email to register", "To complete the registration go to https://meteorclient.com/confirm?token="+token.String()+" . The link is valid for 15 minutes.")
 	return nil
 }
 

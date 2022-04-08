@@ -399,7 +399,7 @@ func ChangeEmailHandler(w http.ResponseWriter, r *http.Request) {
 	token := ksuid.New()
 	changeEmailTokens[token] = passwordChangeInfo{account.ID, time.Now(), email}
 
-	core.SendEmail(account.Email, "Confirm new email", "To change the email to "+email+" go to https://meteorclient.com/confirmChangeEmail?token="+token.String()+". The link is valid for 15 minutes.")
+	core.SendEmail(account.Email, "Confirm new email", "To change the email to "+email+" go to https://meteorclient.com/confirmChangeEmail?token="+token.String()+" . The link is valid for 15 minutes.")
 	core.Json(w, core.J{})
 }
 
@@ -534,6 +534,6 @@ func ForgotPasswordHandler(w http.ResponseWriter, r *http.Request) {
 	token := ksuid.New()
 	forgotPasswordTokens[token] = accountTimeInfo{account.ID, time.Now()}
 
-	core.SendEmail(email, "Forgot password", "To change the password to "+email+" go to https://meteorclient.com/changePassword?token="+token.String()+". The link is valid for 15 minutes.")
+	core.SendEmail(email, "Forgot password", "To change the password to "+email+" go to https://meteorclient.com/changePassword?token="+token.String()+" . The link is valid for 15 minutes.")
 	core.Json(w, core.J{})
 }
