@@ -10,17 +10,26 @@
 <script lang="ts" context="module">
     import type { Load } from "@sveltejs/kit";
     import { fetchStats } from "$lib/stats";
+    import { fetchUser } from "$lib/user";
+    // import { writable } from 'svelte/store';
+    // import type { Writable } from "svelte/types/runtime/store";
+    //
+    // export const tokenStore: Writable<string> = writable("");
+    // let token = "";
+    //
+    // tokenStore.subscribe(value => token = value);
 
     export const load: Load = async ({ fetch }) => {
         return {
             props: {
-                stats: await fetchStats(fetch)
+                stats: await fetchStats(fetch),
+                user: await fetchUser(fetch, null /*TODO*/)
             }
         }
     };
 </script>
 
-<Navbar />
+<Navbar user={$$props.user}/>
 <Main />
 <Info stats={$$props.stats} />
 <Mpvp />

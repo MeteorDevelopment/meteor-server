@@ -24,15 +24,22 @@
         display: inline-block;
         backdrop-filter: blur(0.1rem);
         padding: 2rem;
+        border-radius: 5px;
     }
 
     .buttons {
         display: flex;
         justify-content: center;
-        gap: 2rem;
+        gap: 5rem;
     }
 
     a {
         background-image: none;
+    }
+
+    h1 {
+        font-weight: 700;
+        font-size: 96px;
+        line-height: 144px;
     }
 </style>
