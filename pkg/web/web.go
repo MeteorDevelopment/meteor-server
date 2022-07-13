@@ -2,8 +2,6 @@ package web
 
 import (
 	"fmt"
-	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
 	"io/fs"
 	"log"
 	"meteor-server/pkg/auth"
@@ -12,6 +10,9 @@ import (
 	"net/http"
 	"os"
 	"time"
+
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 
 	"meteor-server/pkg/core"
 )
@@ -26,6 +27,17 @@ func redirectHandler(url string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, url, http.StatusFound)
 	}
+}
+
+func Cors(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodOptions {
+			w.Header().Set("Access-Control-Allow-Origin", "*")
+			w.WriteHeader(http.StatusOK)
+		} else {
+			next.ServeHTTP(w, r)
+		}
+	})
 }
 
 func Main() {
@@ -45,6 +57,7 @@ func Main() {
 		r.Use(middleware.Logger)
 	}
 
+	r.Use(Cors)
 	r.Use(middleware.SetHeader("Connection", "close"))
 	r.Use(middleware.Recoverer)
 
