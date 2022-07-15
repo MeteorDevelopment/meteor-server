@@ -440,6 +440,43 @@ func ConfirmChangeEmailHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "https://meteorclient.com/account", http.StatusPermanentRedirect)
 }
 
+func ConfirmChangeEmailHandlerApi(w http.ResponseWriter, r *http.Request) {
+	// Validate token
+	tokenStr := r.URL.Query().Get("token")
+	if tokenStr == "" {
+		core.JsonError(w, "Invalid token.")
+		return
+	}
+
+	token, err := ksuid.Parse(tokenStr)
+	if err != nil {
+		core.JsonError(w, "Invalid token.")
+		return
+	}
+
+	info, exists := changeEmailTokens[token]
+	if !exists {
+		core.JsonError(w, "Invalid token.")
+		return
+	}
+
+	delete(changeEmailTokens, token)
+	if time.Now().Sub(info.time).Minutes() > 15 {
+		core.JsonError(w, "Outdated token.")
+		return
+	}
+
+	// Change email
+	account, err := db.GetAccountId(info.accountId)
+	if err != nil {
+		core.JsonError(w, "Invalid token.")
+		return
+	}
+
+	account.SetEmail(info.data)
+	core.Json(w, core.J{})
+}
+
 func ChangePasswordHandler(w http.ResponseWriter, r *http.Request) {
 	// Get account
 	account, err := db.GetAccount(r)

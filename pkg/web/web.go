@@ -100,6 +100,8 @@ func Main() {
 
 	// /api
 	r.Route("/api", func(r chi.Router) {
+		r.Get("/download", api.DownloadHandler)
+
 		r.Get("/capes", api.CapesHandler)
 		r.Get("/stats", api.StatsHandler)
 		r.Get("/capeowners", api.CapeOwnersHandler)
@@ -125,6 +127,7 @@ func Main() {
 			r.Post("/uploadCape", auth.Auth(api.UploadCapeHandler))
 			r.Post("/changeUsername", auth.Auth(api.ChangeUsernameHandler))
 			r.Post("/changeEmail", auth.Auth(api.ChangeEmailHandler))
+			r.Get("/confirmChangeEmail", api.ConfirmChangeEmailHandlerApi)
 			r.Post("/changePassword", auth.Auth(api.ChangePasswordHandler))
 			r.Post("/changePasswordToken", api.ChangePasswordTokenHandler)
 		})
