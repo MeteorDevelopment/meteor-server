@@ -48,7 +48,12 @@ func UploadDevBuildHandler(w http.ResponseWriter, r *http.Request) {
 	// Save file
 	_ = os.Mkdir("dev_builds", 0755)
 
-	file, err := os.Create("dev_builds/" + header.Filename)
+	global := db.GetGlobal()
+	d, _ := strconv.Atoi(global.DevBuild)
+	global.DevBuild = strconv.Itoa(d + 1)
+	db.SetDevBuild(global.DevBuild)
+
+	file, err := os.Create("dev_builds/meteor-client-" + core.GetConfig().DevBuildVersion + "-" + global.DevBuild + ".jar")
 	if err != nil {
 		core.JsonError(w, "Server error. Failed to create file.")
 		return
@@ -77,4 +82,10 @@ func UploadDevBuildHandler(w http.ResponseWriter, r *http.Request) {
 			_ = os.Remove("dev_builds/" + oldest)
 		}
 	}
+
+	// Response
+	core.Json(w, core.J{
+		"version": core.GetConfig().DevBuildVersion,
+		"number":  global.DevBuild,
+	})
 }

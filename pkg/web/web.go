@@ -106,7 +106,6 @@ func Main() {
 		r.Get("/stats", api.StatsHandler)
 		r.Get("/capeowners", api.CapeOwnersHandler)
 
-		r.Post("/setDevBuild", auth.TokenAuth(api.SetDevBuildHandler))
 		r.Post("/uploadDevBuild", auth.TokenAuth(api.UploadDevBuildHandler))
 
 		// /api/account
