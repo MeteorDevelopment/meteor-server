@@ -113,9 +113,9 @@ func Main() {
 	s := &http.Server{
 		Addr:         fmt.Sprintf(":%d", core.GetConfig().Port),
 		Handler:      r,
-		WriteTimeout: 10 * time.Second,
-		ReadTimeout:  10 * time.Second,
-		IdleTimeout:  10 * time.Second,
+		WriteTimeout: 6 * time.Second,
+		ReadTimeout:  6 * time.Second,
+		IdleTimeout:  6 * time.Second,
 	}
 
 	fmt.Printf("Listening on %s\n", s.Addr)

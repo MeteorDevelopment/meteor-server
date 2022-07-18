@@ -8,6 +8,7 @@ import (
 )
 
 func main() {
+	core.Init()
 	core.LoadConfig()
 	core.InitEmail()
 
