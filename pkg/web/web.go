@@ -94,11 +94,11 @@ func Main() {
 		})
 
 		// /api/online
-		/*r.Route("/online", func(r chi.Router) {
+		r.Route("/online", func(r chi.Router) {
 			r.Get("/ping", api.PingHandler)
 			r.Post("/ping", api.PingHandler)
 			r.Post("/leave", api.LeaveHandler)
-		})*/
+		})
 
 		// /api/discord
 		r.Route("/discord", func(r chi.Router) {
