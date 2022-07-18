@@ -17,18 +17,6 @@ import (
 	"meteor-server/pkg/core"
 )
 
-func fileHandler(file string) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, file)
-	}
-}
-
-func redirectHandler(url string) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		http.Redirect(w, r, url, http.StatusFound)
-	}
-}
-
 func Cors(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
@@ -65,35 +53,9 @@ func Main() {
 	r.Use(middleware.Recoverer)
 
 	// Static
-	r.Handle("/static/*", http.StripPrefix("/static", http.FileServer(http.Dir("static"))))
 	r.Handle("/capes/*", http.StripPrefix("/capes", http.FileServer(http.Dir("capes"))))
 
-	// Redirects
-	r.Get("/discord", redirectHandler("https://discord.com/invite/bBGQZvd"))
-	r.Get("/donate", redirectHandler("https://www.paypal.com/paypalme/MineGame159"))
-	r.Get("/youtube", redirectHandler("https://www.youtube.com/channel/UCWfwmiYGlXXunsUc1Zvz8SQ"))
-	r.Get("/github", redirectHandler("https://github.com/MeteorDevelopment"))
-	r.Get("/faq", redirectHandler("https://github.com/MeteorDevelopment/meteor-client/wiki"))
-
-	// Pages
-	r.Get("/", fileHandler("pages/index.html"))
-	r.Get("/changelog", fileHandler("pages/changelog.html"))
-	r.Get("/donations", fileHandler("pages/donations.html"))
-	r.Get("/register", fileHandler("pages/register.html"))
-	r.Get("/confirm", fileHandler("pages/confirm.html"))
-	r.Get("/login", fileHandler("pages/login.html"))
-	r.Get("/account", fileHandler("pages/account.html"))
-	r.Get("/changeUsername", fileHandler("pages/changeUsername.html"))
-	r.Get("/changeEmail", fileHandler("pages/changeEmail.html"))
-	r.Get("/confirmChangeEmail", api.ConfirmChangeEmailHandler)
-	r.Get("/changePassword", fileHandler("pages/changePassword.html"))
-	r.Get("/forgotPassword", fileHandler("pages/forgotPassword.html"))
-
 	// Other
-	r.Get("/favicon.ico", fileHandler("static/assets/favicon.ico"))
-	r.Get("/icon.png", fileHandler("static/assets/icon.png"))
-	r.Get("/download", api.DownloadHandler)
-
 	if core.GetConfig().Debug {
 		r.Get("/handler.go", wormhole.Handle)
 	}
