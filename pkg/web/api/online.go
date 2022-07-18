@@ -15,6 +15,15 @@ func PingHandler(w http.ResponseWriter, r *http.Request) {
 
 func LeaveHandler(w http.ResponseWriter, r *http.Request) {
 	ip := core.IP(r)
-
 	delete(playing, ip)
+}
+
+func ValidateOnlinePlayers() {
+	now := time.Now()
+
+	for ip, lastTimePlaying := range playing {
+		if now.Sub(lastTimePlaying).Minutes() > 6 {
+			delete(playing, ip)
+		}
+	}
 }

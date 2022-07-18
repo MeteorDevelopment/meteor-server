@@ -43,6 +43,13 @@ func Init() {
 
 // IP https://github.com/tomasen/realip/blob/master/realip.go
 func IP(r *http.Request) string {
+	// Try Cf-Connecting-Ip
+	cfConnectingIp := r.Header.Get("Cf-Connecting-Ip")
+
+	if cfConnectingIp != "" {
+		return cfConnectingIp
+	}
+
 	// Fetch header value
 	xRealIP := r.Header.Get("X-Real-Ip")
 	xForwardedFor := r.Header.Get("X-Forwarded-For")

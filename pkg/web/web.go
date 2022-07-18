@@ -41,6 +41,15 @@ func Main() {
 
 	r := chi.NewRouter()
 
+	// Setup periodic timers
+	t := time.NewTicker(10 * time.Minute)
+	go func() {
+		for {
+			api.ValidateOnlinePlayers()
+			<-t.C
+		}
+	}()
+
 	// Middlewares
 	r.Use(middleware.RealIP)
 
