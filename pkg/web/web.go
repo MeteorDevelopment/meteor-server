@@ -89,6 +89,8 @@ func Main() {
 			r.Post("/logout", auth.Auth(api.LogoutHandler))
 
 			r.Get("/info", auth.Auth(api.AccountInfoHandler))
+			r.Get("/getByUuid", auth.TokenAuth(api.GetAccountByMcUuid))
+
 			r.Get("/generateDiscordLinkToken", auth.Auth(api.GenerateDiscordLinkTokenHandler))
 			r.Post("/linkDiscord", auth.TokenAuth(api.LinkDiscordHandler))
 			r.Post("/unlinkDiscord", auth.Auth(api.UnlinkDiscordHandler))

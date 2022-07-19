@@ -81,6 +81,13 @@ func GetAccountDiscordId(id string) (Account, error) {
 	return acc, err
 }
 
+func GetAccountUuid(uuid uuid.UUID) (Account, error) {
+	var acc Account
+	err := accounts.FindOne(nil, bson.M{"mc_accounts": uuid}).Decode(&acc)
+
+	return acc, err
+}
+
 func GetAccountsWithCape() []Account {
 	cursor, err := accounts.Find(nil, bson.M{"cape": bson.M{"$ne": ""}})
 	if err != nil {

@@ -105,13 +105,7 @@ func newCapeInfo(cape db.Cape, account db.Account, title string) capeInfo {
 	}
 }
 
-func AccountInfoHandler(w http.ResponseWriter, r *http.Request) {
-	account, err := db.GetAccount(r)
-	if err != nil {
-		core.JsonError(w, "Could not get account.")
-		return
-	}
-
+func getAccountInfo(account db.Account) accountInfo {
 	info := accountInfo{account, "", "", make([]capeInfo, 0)}
 
 	// Discord info
@@ -139,7 +133,33 @@ func AccountInfoHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	core.Json(w, info)
+	return info
+}
+
+func AccountInfoHandler(w http.ResponseWriter, r *http.Request) {
+	account, err := db.GetAccount(r)
+	if err != nil {
+		core.JsonError(w, "Could not get account.")
+		return
+	}
+
+	core.Json(w, getAccountInfo(account))
+}
+
+func GetAccountByMcUuid(w http.ResponseWriter, r *http.Request) {
+	id, err := uuid.Parse(r.URL.Query().Get("uuid"))
+	if err != nil {
+		core.JsonError(w, "Invalid UUID.")
+		return
+	}
+
+	account, err := db.GetAccountUuid(id)
+	if err != nil {
+		core.JsonError(w, "No account linked to this UUID.")
+		return
+	}
+
+	core.Json(w, getAccountInfo(account))
 }
 
 func GenerateDiscordLinkTokenHandler(w http.ResponseWriter, r *http.Request) {
