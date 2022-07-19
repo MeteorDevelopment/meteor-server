@@ -118,10 +118,17 @@ func Main() {
 			r.Post("/userLeft", auth.TokenAuth(api.DiscordUserLeftHandler))
 		})
 
+		// /api/payments
 		r.Route("/payments", func(r chi.Router) {
 			r.Get("/create", auth.Auth(api.CreateOrderHandler))
 			r.Get("/cancel", api.CancelOrderHandler)
 			r.Post("/confirm", api.ConfirmOrderHandler)
+		})
+
+		// /api/addons
+		r.Route("/addons", func(r chi.Router) {
+			r.Get("/getById", api.GetAddonById)
+			r.Get("/search", api.SearchAddons)
 		})
 	})
 

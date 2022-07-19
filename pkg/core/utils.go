@@ -129,13 +129,23 @@ func IsEmailValid(email string) bool {
 func Json(w http.ResponseWriter, v interface{}) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(v)
+
+	err := json.NewEncoder(w).Encode(v)
+	if err != nil {
+		_, _ = fmt.Fprint(os.Stderr, "Failed to encode json response: ", err.Error())
+		return
+	}
 }
 
 func JsonError(w http.ResponseWriter, message interface{}) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusBadRequest)
-	json.NewEncoder(w).Encode(J{"error": message})
+
+	err := json.NewEncoder(w).Encode(J{"error": message})
+	if err != nil {
+		_, _ = fmt.Fprint(os.Stderr, "Failed to encode json error response: ", err.Error())
+		return
+	}
 }
 
 func DownloadFile(formFile multipart.File, file *os.File, w http.ResponseWriter) bool {

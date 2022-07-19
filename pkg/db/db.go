@@ -1,16 +1,15 @@
 package db
 
 import (
-	"log"
-	"reflect"
-
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/bsoncodec"
 	"go.mongodb.org/mongo-driver/bson/bsonrw"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"log"
 	"meteor-server/pkg/core"
+	"reflect"
 )
 
 var client *mongo.Client
@@ -20,6 +19,7 @@ var global *mongo.Collection
 var accounts *mongo.Collection
 var capes *mongo.Collection
 var joinStats *mongo.Collection
+var addons *mongo.Collection
 
 func encodeUUID(c bsoncodec.EncodeContext, w bsonrw.ValueWriter, v reflect.Value) error {
 	return w.WriteString(v.Interface().(uuid.UUID).String())
@@ -65,6 +65,7 @@ func Init() {
 	accounts = db.Collection("accounts", options.Collection())
 	capes = db.Collection("capes", options.Collection())
 	joinStats = db.Collection("join-stats", options.Collection())
+	addons = db.Collection("addons", options.Collection())
 }
 
 func Close() {
