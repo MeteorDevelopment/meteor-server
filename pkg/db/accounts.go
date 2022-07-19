@@ -141,12 +141,13 @@ func (acc *Account) LinkDiscord(id string) error {
 
 	// If the user has donator role but isn't a donator, remove it (shouldn't happen)
 	if !acc.Donator {
-		discord.RemoveRole(id, discord.DonatorRole)
+		discord.RemoveRole(id, discord.DonorRole)
 	}
 
 	// If the account has donator but not donator role, give it
 	if acc.Donator {
-		discord.AddRole(id, discord.DonatorRole)
+		discord.AddRole(id, discord.DonorRole)
+		discord.SendDonorMsg(id)
 	}
 
 	// Add account role regardless
@@ -157,7 +158,7 @@ func (acc *Account) LinkDiscord(id string) error {
 func (acc *Account) UnlinkDiscord() {
 	// Remove account related roles
 	discord.RemoveRole(acc.DiscordID, discord.AccountRole)
-	discord.RemoveRole(acc.DiscordID, discord.DonatorRole)
+	discord.RemoveRole(acc.DiscordID, discord.DonorRole)
 
 	// Remove discord ID from database
 	_, _ = accounts.UpdateOne(nil, bson.M{"id": acc.ID}, bson.M{"$set": bson.M{"discord_id": ""}})
@@ -209,6 +210,7 @@ func (acc *Account) SetCape(id string) {
 func (acc *Account) GiveDonator() {
 	_, _ = accounts.UpdateOne(nil, bson.M{"id": acc.ID}, bson.M{"$set": bson.M{"donator": true, "can_have_custom_cape": true, "cape": "donator"}})
 
-	discord.AddRole(acc.DiscordID, discord.DonatorRole)
+	discord.AddRole(acc.DiscordID, discord.DonorRole)
 	discord.AddRole(acc.DiscordID, discord.AccountRole)
+	discord.SendDonorMsg(acc.DiscordID)
 }
