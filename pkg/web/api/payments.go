@@ -23,7 +23,7 @@ type WebhookResponse struct {
 
 func InitPayPal() {
 	var err error
-	client, err = paypal.NewClient(core.GetPrivateConfig().PayPalClientID, core.GetPrivateConfig().PayPalSecret, paypal.APIBaseSandBox)
+	client, err = paypal.NewClient(core.GetPrivateConfig().PayPalClientID, core.GetPrivateConfig().PayPalSecret, paypal.APIBaseLive)
 	if err != nil {
 		println("Failed to log in to paypal.")
 		return
