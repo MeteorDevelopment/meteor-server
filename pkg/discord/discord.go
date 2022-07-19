@@ -3,6 +3,7 @@ package discord
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"meteor-server/pkg/core"
 	"net/http"
 )
@@ -18,11 +19,12 @@ type member struct {
 }
 
 const (
-	guildId = "689197705683140636"
-
+	Guild       = "689197705683140636"
 	MutedRole   = "741016178155192432"
 	AccountRole = "777248653445300264"
-	DonatorRole = "689205464574984353"
+	DonorRole   = "689205464574984353"
+	DonorChat   = "713429344135020554"
+	DevRole     = "689198253753106480"
 )
 
 var client = http.Client{}
@@ -48,18 +50,18 @@ func GetUser(id string) User {
 
 func AddRole(user string, role string) {
 	if !HasRole(user, role) {
-		_ = send("PUT", "guilds/"+guildId+"/members/"+user+"/roles/"+role).Body.Close()
+		_ = send("PUT", "guilds/"+Guild+"/members/"+user+"/roles/"+role).Body.Close()
 	}
 }
 
 func RemoveRole(user string, role string) {
 	if HasRole(user, role) {
-		_ = send("DELETE", "guilds/"+guildId+"/members/"+user+"/roles/"+role).Body.Close()
+		_ = send("DELETE", "guilds/"+Guild+"/members/"+user+"/roles/"+role).Body.Close()
 	}
 }
 
 func HasRole(user string, role string) bool {
-	res := send("GET", "guilds/"+guildId+"/members/"+user)
+	res := send("GET", "guilds/"+Guild+"/members/"+user)
 
 	var member member
 	_ = json.NewDecoder(res.Body).Decode(&member)
@@ -73,4 +75,17 @@ func HasRole(user string, role string) bool {
 	}
 
 	return false
+}
+
+func SendMessage(channel string, message string) {
+	body := []byte(fmt.Sprintf(`{ "content": "%s" }`, message))
+	req, _ := http.NewRequest("POST", "https://discord.com/api/channels/"+channel+"/messages", bytes.NewBuffer(body))
+	req.Header.Set("User-Agent", "Meteor Server")
+	req.Header.Set("Authorization", "Bot "+core.GetPrivateConfig().DiscordToken)
+	req.Header.Set("Content-Type", "application/json")
+	_, _ = client.Do(req)
+}
+
+func SendDonorMsg(user string) {
+	SendMessage(DonorChat, fmt.Sprintf("<@%s> thanks for donating to Meteor and supporting the <@&%s> team.", user, DevRole))
 }

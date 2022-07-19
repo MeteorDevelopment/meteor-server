@@ -114,7 +114,6 @@ func Main() {
 		r.Route("/discord", func(r chi.Router) {
 			r.Post("/userJoined", auth.TokenAuth(api.DiscordUserJoinedHandler))
 			r.Post("/userLeft", auth.TokenAuth(api.DiscordUserLeftHandler))
-			r.Post("/giveDonator", auth.TokenAuth(api.GiveDonatorHandler))
 		})
 
 		r.Route("/payments", func(r chi.Router) {

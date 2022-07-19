@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-func DiscordUserJoinedHandler(w http.ResponseWriter, r *http.Request) {
+func DiscordUserJoinedHandler(_ http.ResponseWriter, r *http.Request) {
 	id := r.URL.Query().Get("id")
 
 	if id != "" {
@@ -15,7 +15,7 @@ func DiscordUserJoinedHandler(w http.ResponseWriter, r *http.Request) {
 			discord.AddRole(account.DiscordID, discord.AccountRole)
 
 			if account.Donator {
-				discord.AddRole(account.DiscordID, discord.DonatorRole)
+				discord.AddRole(account.DiscordID, discord.DonorRole)
 			}
 		}
 	}
@@ -23,17 +23,6 @@ func DiscordUserJoinedHandler(w http.ResponseWriter, r *http.Request) {
 	db.IncrementJoins()
 }
 
-func DiscordUserLeftHandler(w http.ResponseWriter, r *http.Request) {
+func DiscordUserLeftHandler(_ http.ResponseWriter, _ *http.Request) {
 	db.IncrementLeaves()
-}
-
-func GiveDonatorHandler(w http.ResponseWriter, r *http.Request) {
-	id := r.URL.Query().Get("id")
-
-	if id != "" {
-		acc, err := db.GetAccountDiscordId(id)
-		if err == nil {
-			acc.GiveDonator()
-		}
-	}
 }
