@@ -125,33 +125,42 @@ func (acc *Account) PasswordMatches(password string) bool {
 }
 
 func (acc *Account) LinkDiscord(id string) error {
+	// Make sure an account with this discord id doesn't exist
 	_, err := GetAccountDiscordId(id)
 	if err == nil {
 		return errors.New("Discord account already linked.")
 	}
 
+	// Don't allow muted people to bypass by linking
 	if discord.HasRole(id, discord.MutedRole) {
 		return errors.New("Cannot link that account because it is muted.")
 	}
 
-	if acc.DiscordID != "" {
-		discord.RemoveRole(acc.DiscordID, discord.AccountRole)
-	}
-
+	// Put discord ID in database
 	_, _ = accounts.UpdateOne(nil, bson.M{"id": acc.ID}, bson.M{"$set": bson.M{"discord_id": id}})
 
-	if discord.HasRole(id, discord.DonatorRole) && !acc.Donator {
-		acc.GiveDonator()
+	// If the user has donator role but isn't a donator, remove it (shouldn't happen)
+	if !acc.Donator {
+		discord.RemoveRole(id, discord.DonatorRole)
 	}
 
+	// If the account has donator but not donator role, give it
+	if acc.Donator {
+		discord.AddRole(id, discord.DonatorRole)
+	}
+
+	// Add account role regardless
 	discord.AddRole(id, discord.AccountRole)
 	return nil
 }
 
 func (acc *Account) UnlinkDiscord() {
-	_, _ = accounts.UpdateOne(nil, bson.M{"id": acc.ID}, bson.M{"$set": bson.M{"discord_id": ""}})
-
+	// Remove account related roles
 	discord.RemoveRole(acc.DiscordID, discord.AccountRole)
+	discord.RemoveRole(acc.DiscordID, discord.DonatorRole)
+
+	// Remove discord ID from database
+	_, _ = accounts.UpdateOne(nil, bson.M{"id": acc.ID}, bson.M{"$set": bson.M{"discord_id": ""}})
 }
 
 func (acc *Account) AddMcAccount(id uuid.UUID) error {
@@ -199,4 +208,7 @@ func (acc *Account) SetCape(id string) {
 
 func (acc *Account) GiveDonator() {
 	_, _ = accounts.UpdateOne(nil, bson.M{"id": acc.ID}, bson.M{"$set": bson.M{"donator": true, "can_have_custom_cape": true, "cape": "donator"}})
+
+	discord.AddRole(acc.DiscordID, discord.DonatorRole)
+	discord.AddRole(acc.DiscordID, discord.AccountRole)
 }

@@ -31,11 +31,9 @@ func GiveDonatorHandler(w http.ResponseWriter, r *http.Request) {
 	id := r.URL.Query().Get("id")
 
 	if id != "" {
-		account, err := db.GetAccountDiscordId(id)
+		acc, err := db.GetAccountDiscordId(id)
 		if err == nil {
-			account.GiveDonator()
+			acc.GiveDonator()
 		}
-
-		discord.AddRole(id, discord.DonatorRole)
 	}
 }

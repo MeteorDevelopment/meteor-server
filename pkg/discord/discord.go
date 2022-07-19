@@ -47,11 +47,15 @@ func GetUser(id string) User {
 }
 
 func AddRole(user string, role string) {
-	_ = send("PUT", "guilds/"+guildId+"/members/"+user+"/roles/"+role).Body.Close()
+	if !HasRole(user, role) {
+		_ = send("PUT", "guilds/"+guildId+"/members/"+user+"/roles/"+role).Body.Close()
+	}
 }
 
 func RemoveRole(user string, role string) {
-	_ = send("DELETE", "guilds/"+guildId+"/members/"+user+"/roles/"+role).Body.Close()
+	if HasRole(user, role) {
+		_ = send("DELETE", "guilds/"+guildId+"/members/"+user+"/roles/"+role).Body.Close()
+	}
 }
 
 func HasRole(user string, role string) bool {
