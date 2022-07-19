@@ -56,7 +56,7 @@ func CreateOrderHandler(w http.ResponseWriter, r *http.Request) {
 			{
 				Amount: &paypal.PurchaseUnitAmount{
 					Value:    strconv.FormatFloat(amount, 'f', 2, 32),
-					Currency: "GBP",
+					Currency: "EUR",
 				},
 			},
 		},
