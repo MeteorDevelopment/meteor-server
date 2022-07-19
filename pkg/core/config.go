@@ -18,10 +18,13 @@ type Config struct {
 }
 
 type PrivateConfig struct {
-	MongoDBUrl    string
-	EmailPassword string
-	DiscordToken  string
-	Token         string
+	MongoDBUrl      string
+	EmailPassword   string
+	DiscordToken    string
+	Token           string
+	PayPalClientID  string
+	PayPalSecret    string
+	PayPalWebhookId string
 }
 
 var config Config

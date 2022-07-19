@@ -38,6 +38,7 @@ func Main() {
 	}
 
 	api.UpdateCapes()
+	api.InitPayPal()
 
 	r := chi.NewRouter()
 
@@ -114,6 +115,12 @@ func Main() {
 			r.Post("/userJoined", auth.TokenAuth(api.DiscordUserJoinedHandler))
 			r.Post("/userLeft", auth.TokenAuth(api.DiscordUserLeftHandler))
 			r.Post("/giveDonator", auth.TokenAuth(api.GiveDonatorHandler))
+		})
+
+		r.Route("/payments", func(r chi.Router) {
+			r.Get("/create", auth.Auth(api.CreateOrderHandler))
+			r.Get("/cancel", api.CancelOrderHandler)
+			r.Post("/confirm", api.ConfirmOrderHandler)
 		})
 	})
 
