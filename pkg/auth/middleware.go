@@ -2,7 +2,6 @@ package auth
 
 import (
 	"context"
-	"encoding/json"
 	"meteor-server/pkg/core"
 	"net/http"
 	"strings"
@@ -22,9 +21,7 @@ func Auth(next http.HandlerFunc) http.HandlerFunc {
 			}
 		}
 
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusUnauthorized)
-		json.NewEncoder(w).Encode(core.J{"error": "Unauthorized."})
+		core.JsonError(w, "Unauthorized.")
 	}
 }
 
@@ -37,8 +34,6 @@ func TokenAuth(next http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusUnauthorized)
-		json.NewEncoder(w).Encode(core.J{"error": "Unauthorized."})
+		core.JsonError(w, "Unauthorized.")
 	}
 }

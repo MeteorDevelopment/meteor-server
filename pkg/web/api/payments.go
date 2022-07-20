@@ -39,13 +39,13 @@ func CreateOrderHandler(w http.ResponseWriter, r *http.Request) {
 	amount, err := strconv.ParseFloat(r.URL.Query().Get("amount"), 32)
 
 	if err != nil || amount < 5 {
-		core.JsonError(w, core.J{"error": "Invalid order amount."})
+		core.JsonError(w, "Invalid order amount.")
 		return
 	}
 
 	user, err := db.GetAccount(r)
 	if err != nil {
-		core.JsonError(w, core.J{"error": "Could not authorize account."})
+		core.JsonError(w, "Could not authorize account.")
 		return
 	}
 
@@ -70,7 +70,7 @@ func CreateOrderHandler(w http.ResponseWriter, r *http.Request) {
 	)
 
 	if err != nil {
-		core.JsonError(w, core.J{"error": "Failed to create order."})
+		core.JsonError(w, "Failed to create order.")
 		println(err)
 		return
 	}
@@ -82,7 +82,7 @@ func CreateOrderHandler(w http.ResponseWriter, r *http.Request) {
 func ConfirmOrderHandler(w http.ResponseWriter, r *http.Request) {
 	valid, err := client.VerifyWebhookSignature(r.Context(), r, core.GetPrivateConfig().PayPalWebhookId)
 	if err != nil || valid.VerificationStatus == "FAILURE" {
-		core.JsonError(w, core.J{"error": "Could not validate webhook signature"})
+		core.JsonError(w, "Could not validate webhook signature.")
 		println(err)
 		return
 	}
@@ -110,8 +110,8 @@ func CancelOrderHandler(w http.ResponseWriter, r *http.Request) {
 
 	if id != "" {
 		delete(orders, id)
-		core.Json(w, core.J{"success": "Order cancelled."})
+		core.Json(w, core.J{})
 	} else {
-		core.Json(w, core.J{"error": "No active orders!"})
+		core.JsonError(w, "No active orders.")
 	}
 }
