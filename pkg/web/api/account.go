@@ -93,7 +93,11 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func LogoutHandler(w http.ResponseWriter, r *http.Request) {
-	auth.Logout(core.GetAccountID(r))
+	err := auth.Logout(r.Header.Get("Authorization"), core.GetAccountID(r))
+	if err != nil {
+		core.JsonError(w, err)
+	}
+
 	core.Json(w, core.J{})
 }
 

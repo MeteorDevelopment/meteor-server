@@ -3,6 +3,7 @@ package auth
 import (
 	"encoding/json"
 	"errors"
+	"golang.org/x/exp/slices"
 	"math/rand"
 	"strings"
 	"sync"
@@ -30,7 +31,7 @@ type ConfirmEmailStruct struct {
 var jwtKey []byte
 
 var tokenCount = 0
-var tokens = make(map[ksuid.KSUID]int)
+var tokens = make(map[ksuid.KSUID][]int)
 var mu = sync.RWMutex{}
 
 var confirmEmails = make(map[ksuid.KSUID]ConfirmEmailStruct)
@@ -126,17 +127,38 @@ func Login(name string, password string) (string, error) {
 		return "", err
 	}
 
-	tokens[account.ID] = tokenCount
+	tokens[account.ID] = append(tokens[account.ID], tokenCount)
 	tokenCount++
 
 	mu.Unlock()
 	return token, nil
 }
 
-func Logout(id ksuid.KSUID) {
+func Logout(token string, id ksuid.KSUID) error {
+	bytes, _, err := jose.Decode(token, jwtKey)
+	if err != nil {
+		return err
+	}
+
+	var claims Claims
+	err = json.Unmarshal([]byte(bytes), &claims)
+	if err != nil {
+		return err
+	}
+
 	mu.Lock()
-	delete(tokens, id)
+	tokenIds, exists := tokens[id]
+	if exists {
+		for i := 0; i < len(tokenIds); i++ {
+			if tokenIds[i] == claims.TokenID {
+				tokens[id] = append(tokenIds[:i], tokenIds[i+1:]...)
+				break
+			}
+		}
+	}
 	mu.Unlock()
+
+	return nil
 }
 
 func IsTokenValid(token string) (ksuid.KSUID, error) {
@@ -152,10 +174,10 @@ func IsTokenValid(token string) (ksuid.KSUID, error) {
 	}
 
 	mu.RLock()
-	validTokenId, exists := tokens[claims.AccountID]
+	validTokenIds, exists := tokens[claims.AccountID]
 	mu.RUnlock()
 
-	if exists && claims.TokenID == validTokenId {
+	if exists && slices.Contains(validTokenIds, claims.TokenID) {
 		return claims.AccountID, nil
 	}
 
