@@ -96,6 +96,7 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 	err := auth.Logout(r.Header.Get("Authorization"), core.GetAccountID(r))
 	if err != nil {
 		core.JsonError(w, err)
+		return
 	}
 
 	core.Json(w, core.J{})
@@ -498,6 +499,10 @@ func ConfirmChangeEmailHandlerApi(w http.ResponseWriter, r *http.Request) {
 	}
 
 	account.SetEmail(info.data)
+
+	// Invalidate tokens
+	auth.Invalidate(account.ID)
+
 	core.Json(w, core.J{})
 }
 
@@ -529,6 +534,9 @@ func ChangePasswordHandler(w http.ResponseWriter, r *http.Request) {
 		core.JsonError(w, "Invalid password.")
 		return
 	}
+
+	// Invalidate tokens
+	auth.Invalidate(account.ID)
 
 	core.Json(w, core.J{})
 }
@@ -575,6 +583,9 @@ func ChangePasswordTokenHandler(w http.ResponseWriter, r *http.Request) {
 		core.JsonError(w, "Invalid password.")
 		return
 	}
+
+	// Invalidate tokens
+	auth.Invalidate(account.ID)
 
 	core.Json(w, core.J{})
 }

@@ -183,3 +183,7 @@ func IsTokenValid(token string) (ksuid.KSUID, error) {
 
 	return ksuid.Nil, errors.New("invalid token")
 }
+
+func Invalidate(id ksuid.KSUID) {
+	delete(tokens, id)
+}
