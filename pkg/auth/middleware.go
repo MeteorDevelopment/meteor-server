@@ -21,7 +21,7 @@ func Auth(next http.HandlerFunc) http.HandlerFunc {
 			}
 		}
 
-		core.JsonError(w, "Unauthorized.")
+		core.Unauthorized(w)
 	}
 }
 
@@ -34,6 +34,6 @@ func TokenAuth(next http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
-		core.JsonError(w, "Unauthorized.")
+		core.Unauthorized(w)
 	}
 }

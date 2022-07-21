@@ -148,6 +148,17 @@ func JsonError(w http.ResponseWriter, message interface{}) {
 	}
 }
 
+func Unauthorized(w http.ResponseWriter) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusUnauthorized)
+
+	err := json.NewEncoder(w).Encode(J{"error": "Unauthorized."})
+	if err != nil {
+		_, _ = fmt.Fprint(os.Stderr, "Failed to encode json error response: ", err.Error())
+		return
+	}
+}
+
 func DownloadFile(formFile multipart.File, file *os.File, w http.ResponseWriter) bool {
 	//goland:noinspection GoUnhandledErrorResult
 	defer formFile.Close()
