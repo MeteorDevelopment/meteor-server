@@ -8,7 +8,7 @@ import (
 )
 
 type Addon struct {
-	ID ksuid.KSUID `bson:"id" json:"id"`
+	ID string `bson:"id" json:"id"`
 
 	Title       string `bson:"title" json:"title"`
 	Icon        string `bson:"icon" json:"icon"`
@@ -31,7 +31,7 @@ type Addon struct {
 	UpdatedAt time.Time `bson:"updated_at" json:"updated_at"`
 }
 
-func GetAddon(id ksuid.KSUID) (Addon, error) {
+func GetAddon(id string) (Addon, error) {
 	var addon Addon
 	err := addons.FindOne(nil, bson.M{"id": id}).Decode(&addon)
 

@@ -1,15 +1,14 @@
 package api
 
 import (
-	"github.com/segmentio/ksuid"
 	"meteor-server/pkg/core"
 	"meteor-server/pkg/db"
 	"net/http"
 )
 
 func GetAddonById(w http.ResponseWriter, r *http.Request) {
-	id, err := ksuid.Parse(r.URL.Query().Get("id"))
-	if err != nil {
+	id := r.URL.Query().Get("id")
+	if id == "" {
 		core.JsonError(w, "Invalid ID.")
 		return
 	}
