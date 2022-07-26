@@ -2,15 +2,15 @@ package db
 
 import (
 	"errors"
-	"log"
-	"meteor-server/pkg/discord"
-	"net/http"
-
+	"github.com/dboslee/lru"
 	"github.com/google/uuid"
 	"github.com/segmentio/ksuid"
 	"go.mongodb.org/mongo-driver/bson"
 	"golang.org/x/crypto/bcrypt"
+	"log"
 	"meteor-server/pkg/core"
+	"meteor-server/pkg/discord"
+	"net/http"
 )
 
 type Account struct {
@@ -31,6 +31,8 @@ type Account struct {
 	Cape              string `bson:"cape" json:"cape"`
 	CanHaveCustomCape bool   `bson:"can_have_custom_cape" json:"can_have_custom_cape"`
 }
+
+var usernameCache = lru.NewSync[ksuid.KSUID, string](lru.WithCapacity(20))
 
 func NewAccount(username string, email string, password string) error {
 	pass, err := bcrypt.GenerateFromPassword([]byte(password), 10)
@@ -127,6 +129,21 @@ func GetAccountWithUsernameOrEmail(name string) (Account, error) {
 	return acc, err
 }
 
+func GetAccountUsername(id ksuid.KSUID) (string, error) {
+	username, ok := usernameCache.Get(id)
+	if ok {
+		return username, nil
+	}
+
+	account, err := GetAccountId(id)
+	if err != nil {
+		return "", err
+	}
+
+	usernameCache.Set(id, account.Username)
+	return account.Username, nil
+}
+
 func (acc *Account) PasswordMatches(password string) bool {
 	return bcrypt.CompareHashAndPassword(acc.Password, []byte(password)) == nil
 }
@@ -194,6 +211,8 @@ func (acc *Account) RemoveMcAccount(id uuid.UUID) {
 
 func (acc *Account) SetUsername(username string) {
 	_, _ = accounts.UpdateOne(nil, bson.M{"id": acc.ID}, bson.M{"$set": bson.M{"username": username}})
+
+	usernameCache.Delete(acc.ID)
 }
 
 func (acc *Account) SetEmail(email string) {

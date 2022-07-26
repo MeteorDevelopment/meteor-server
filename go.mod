@@ -3,6 +3,7 @@ module meteor-server
 go 1.18
 
 require (
+	github.com/dboslee/lru v0.0.1
 	github.com/dvsekhvalnov/jose2go v1.5.0
 	github.com/go-chi/chi/v5 v5.0.5
 	github.com/google/uuid v1.3.0

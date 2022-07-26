@@ -100,12 +100,12 @@ func getApiAddon(addon db.Addon, includeMarkdown bool) apiAddon {
 	developers := make([]apiAddonDeveloper, 0, len(addon.Developers))
 
 	for _, developer := range addon.Developers {
-		account, err := db.GetAccountId(developer)
+		username, err := db.GetAccountUsername(developer)
 
 		if err == nil {
 			developers = append(developers, apiAddonDeveloper{
 				ID:       developer,
-				Username: account.Username,
+				Username: username,
 			})
 		}
 	}
