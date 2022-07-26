@@ -39,5 +39,9 @@ func GetAddon(id string) (Addon, error) {
 }
 
 func SearchAddons(text string) (*mongo.Cursor, error) {
+	if text == "" {
+		return addons.Find(nil, bson.M{})
+	}
+
 	return addons.Find(nil, bson.M{"title": bson.M{"$regex": text, "$options": "i"}})
 }
