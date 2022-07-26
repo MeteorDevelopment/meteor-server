@@ -38,10 +38,34 @@ func GetAddon(id string) (Addon, error) {
 	return addon, err
 }
 
-func SearchAddons(text string) (*mongo.Cursor, error) {
-	if text == "" {
-		return addons.Find(nil, bson.M{})
+func SearchAddons(text string, page int) (*mongo.Cursor, error) {
+	if page < 1 {
+		page = 1
 	}
 
-	return addons.Find(nil, bson.M{"title": bson.M{"$regex": text, "$options": "i"}})
+	sort := bson.D{{"$sort", bson.D{
+		{"download_count", -1},
+	}}}
+	skip := bson.D{{"$skip", (page - 1) * 10}}
+	limit := bson.D{{"$limit", 10}}
+
+	if text == "" {
+		return addons.Aggregate(nil, mongo.Pipeline{
+			sort,
+			skip,
+			limit,
+		})
+	}
+
+	return addons.Aggregate(nil, mongo.Pipeline{
+		bson.D{{"$match", bson.D{
+			{"title", bson.M{
+				"$regex":   text,
+				"$options": "i",
+			}},
+		}}},
+		sort,
+		skip,
+		limit,
+	})
 }

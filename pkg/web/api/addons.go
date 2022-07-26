@@ -5,6 +5,7 @@ import (
 	"meteor-server/pkg/core"
 	"meteor-server/pkg/db"
 	"net/http"
+	"strconv"
 	"time"
 )
 
@@ -54,7 +55,12 @@ func GetAddonById(w http.ResponseWriter, r *http.Request) {
 }
 
 func SearchAddons(w http.ResponseWriter, r *http.Request) {
-	cursor, err := db.SearchAddons(r.URL.Query().Get("text"))
+	page, err := strconv.Atoi(r.URL.Query().Get("page"))
+	if err != nil {
+		page = 1
+	}
+
+	cursor, err := db.SearchAddons(r.URL.Query().Get("text"), page)
 	//goland:noinspection GoUnhandledErrorResult
 	defer cursor.Close(r.Context())
 
