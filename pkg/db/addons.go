@@ -32,6 +32,8 @@ type Addon struct {
 	UpdatedAt time.Time `bson:"updated_at" json:"updated_at"`
 }
 
+const pageSize = 15
+
 func GetAddon(id string) (Addon, error) {
 	var addon Addon
 	err := addons.FindOne(nil, bson.M{"id": id}).Decode(&addon)
@@ -47,8 +49,8 @@ func SearchAddons(text string, page int) (*mongo.Cursor, int, error) {
 	sort := bson.D{{"$sort", bson.D{
 		{"download_count", -1},
 	}}}
-	skip := bson.D{{"$skip", (page - 1) * 10}}
-	limit := bson.D{{"$limit", 10}}
+	skip := bson.D{{"$skip", (page - 1) * pageSize}}
+	limit := bson.D{{"$limit", pageSize}}
 
 	if text == "" {
 		count, err := addons.EstimatedDocumentCount(nil)
@@ -62,7 +64,7 @@ func SearchAddons(text string, page int) (*mongo.Cursor, int, error) {
 			limit,
 		})
 
-		return cursor, int(math.Ceil(float64(count) / 10)), err
+		return cursor, int(math.Ceil(float64(count) / pageSize)), err
 	}
 
 	count, err := addons.CountDocuments(nil, bson.M{"title": bson.M{"$regex": text, "$options": "i"}})
@@ -82,5 +84,5 @@ func SearchAddons(text string, page int) (*mongo.Cursor, int, error) {
 		limit,
 	})
 
-	return cursor, int(math.Ceil(float64(count) / 10)), err
+	return cursor, int(math.Ceil(float64(count) / pageSize)), err
 }
