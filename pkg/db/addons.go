@@ -4,6 +4,7 @@ import (
 	"github.com/segmentio/ksuid"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"math"
 	"time"
 )
 
@@ -38,7 +39,7 @@ func GetAddon(id string) (Addon, error) {
 	return addon, err
 }
 
-func SearchAddons(text string, page int) (*mongo.Cursor, error) {
+func SearchAddons(text string, page int) (*mongo.Cursor, int, error) {
 	if page < 1 {
 		page = 1
 	}
@@ -50,14 +51,26 @@ func SearchAddons(text string, page int) (*mongo.Cursor, error) {
 	limit := bson.D{{"$limit", 10}}
 
 	if text == "" {
-		return addons.Aggregate(nil, mongo.Pipeline{
+		count, err := addons.EstimatedDocumentCount(nil)
+		if err != nil {
+			return nil, 0, err
+		}
+
+		cursor, err := addons.Aggregate(nil, mongo.Pipeline{
 			sort,
 			skip,
 			limit,
 		})
+
+		return cursor, int(math.Ceil(float64(count) / 10)), err
 	}
 
-	return addons.Aggregate(nil, mongo.Pipeline{
+	count, err := addons.CountDocuments(nil, bson.M{"title": bson.M{"$regex": text, "$options": "i"}})
+	if err != nil {
+		return nil, 0, err
+	}
+
+	cursor, err := addons.Aggregate(nil, mongo.Pipeline{
 		bson.D{{"$match", bson.D{
 			{"title", bson.M{
 				"$regex":   text,
@@ -68,4 +81,6 @@ func SearchAddons(text string, page int) (*mongo.Cursor, error) {
 		skip,
 		limit,
 	})
+
+	return cursor, int(math.Ceil(float64(count) / 10)), err
 }

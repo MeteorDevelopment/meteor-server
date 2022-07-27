@@ -60,7 +60,7 @@ func SearchAddons(w http.ResponseWriter, r *http.Request) {
 		page = 1
 	}
 
-	cursor, err := db.SearchAddons(r.URL.Query().Get("text"), page)
+	cursor, pageCount, err := db.SearchAddons(r.URL.Query().Get("text"), page)
 	//goland:noinspection GoUnhandledErrorResult
 	defer cursor.Close(r.Context())
 
@@ -87,7 +87,7 @@ func SearchAddons(w http.ResponseWriter, r *http.Request) {
 		addons = append(addons, getApiAddon(addon, false))
 	}
 
-	core.Json(w, core.J{"addons": addons})
+	core.Json(w, core.J{"page_count": pageCount, "addons": addons})
 	_ = cursor.Close(nil)
 }
 
