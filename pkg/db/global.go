@@ -1,6 +1,11 @@
 package db
 
-import "go.mongodb.org/mongo-driver/bson"
+import (
+	"fmt"
+	"go.mongodb.org/mongo-driver/bson"
+	"os"
+	"time"
+)
 
 type Global struct {
 	Downloads      int    `bson:"downloads"`
@@ -9,10 +14,22 @@ type Global struct {
 	DevBuild       string `bson:"devBuild"`
 }
 
+var cache Global
+var lastTime time.Time
+
 func GetGlobal() Global {
-	var g Global
-	global.FindOne(nil, bson.M{"id": "Stats"}).Decode(&g)
-	return g
+	now := time.Now()
+
+	if now.Sub(lastTime) > time.Second {
+		err := global.FindOne(nil, bson.M{"id": "Stats"}).Decode(&cache)
+		lastTime = now
+
+		if err != nil {
+			_, _ = fmt.Fprintln(os.Stderr, "Failed to query global stats:", err)
+		}
+	}
+
+	return cache
 }
 
 func SetDevBuild(devBuild string) {
