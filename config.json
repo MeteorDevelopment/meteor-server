@@ -1,15 +1,30 @@
 {
   "port": 81,
   "debug": false,
-  "version": "0.4.9",
-  "dev_build_version": "0.5.0",
-  "mc_version": "1.18.2",
+  "version": "0.5.0",
+  "dev_build_version": "0.5.1",
+  "mc_version": "1.19",
   "dev_build_mc_version": "1.19",
   "max_dev_builds": 10,
   "changelog": [
-    "Added .nbt paste command",
-    "Added carpets to SpawnProofer",
-    "Fixed font scaling with vanilla font rendering",
-    "Fixed some bugs"
+    "Updated to 1.19",
+    "Friends are now UUID based",
+    "Added entity nametags to NoRender",
+    "Font selection now looks through the fonts installed on your machine instead of a custom folder",
+    "HighwayBuilder now pauses on AutoGap",
+    "Added no signatures to ServerSpoof",
+    "Fixed Freelook to work for camera",
+    "Added armor storage to InventoryTweaks",
+    "Added BetterBeacons",
+    "Rewrote HUD",
+    "Merged container view hud with inventory hud",
+    "Macros now support Starscript",
+    "Fixed using items breaking rotations",
+    "Fixed Nuker rendering",
+    "Comfortaa is now the default font instead of JetBrains Mono",
+    "Slightly tweaked default GUI colors",
+    "Moved friends color from friends tab to config tab",
+    "Added none mode setting to Item Hud",
+    "Bunch of fixes to various features"
   ]
 }
