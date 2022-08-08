@@ -63,7 +63,7 @@ func Main() {
 	r.Use(middleware.Recoverer)
 
 	// Static
-	r.Handle("/capes/*", http.StripPrefix("/capes", http.FileServer(http.Dir("capes"))))
+	r.Handle("/capes/*", http.StripPrefix("/capes", http.FileServer(http.Dir("data/capes"))))
 
 	// Other
 	if core.GetConfig().Debug {

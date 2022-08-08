@@ -23,7 +23,7 @@ func DownloadHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=meteor-client-%s-%s.jar", version, devBuild))
-		http.ServeFile(w, r, fmt.Sprintf("dev_builds/meteor-client-%s-%s.jar", version, devBuild))
+		http.ServeFile(w, r, fmt.Sprintf("data/dev_builds/meteor-client-%s-%s.jar", version, devBuild))
 	} else {
 		url := fmt.Sprintf("https://maven.meteordev.org/releases/meteordevelopment/meteor-client/%s/meteor-client-%s.jar", version, version)
 		http.Redirect(w, r, url, http.StatusPermanentRedirect)
