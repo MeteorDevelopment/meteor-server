@@ -2,6 +2,8 @@ package core
 
 import (
 	"encoding/json"
+	"github.com/caarlos0/env"
+	"github.com/joho/godotenv"
 	"log"
 	"os"
 )
@@ -18,13 +20,13 @@ type Config struct {
 }
 
 type PrivateConfig struct {
-	MongoDBUrl      string
-	EmailPassword   string
-	DiscordToken    string
-	Token           string
-	PayPalClientID  string
-	PayPalSecret    string
-	PayPalWebhookId string
+	MongoDBUrl      string `env:"MONGO_URL"`
+	EmailPassword   string `env:"EMAIL_PSW"`
+	DiscordToken    string `env:"DISCORD_TOKEN"`
+	Token           string `env:"BACKEND_TOKEN"`
+	PayPalClientID  string `env:"PAYPAL_CID"`
+	PayPalSecret    string `env:"PAYPAL_SECRET"`
+	PayPalWebhookId string `env:"PAYPAL_WHID"`
 }
 
 var config Config
@@ -43,12 +45,14 @@ func LoadConfig() {
 	}
 
 	// Private config
-	f, err = os.ReadFile("data/private_config.json")
+
+	err = godotenv.Load()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	err = json.Unmarshal(f, &privateConfig)
+	privateConfig = PrivateConfig{}
+	err = env.Parse(&privateConfig)
 	if err != nil {
 		log.Fatal(err)
 	}
