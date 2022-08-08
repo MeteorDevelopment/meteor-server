@@ -6,4 +6,4 @@ COPY . .
 
 RUN go build
 
-CMD ["meteor-server"]
+CMD [ "./meteor-server" ]

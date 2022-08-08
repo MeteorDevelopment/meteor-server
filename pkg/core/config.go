@@ -32,7 +32,7 @@ var privateConfig PrivateConfig
 
 func LoadConfig() {
 	// Config
-	f, err := os.ReadFile("data/config.json")
+	f, err := os.ReadFile("config.json")
 	if err != nil {
 		log.Fatal(err)
 	}
