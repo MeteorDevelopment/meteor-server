@@ -355,7 +355,7 @@ func UploadCapeHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Save file
-	file, err := os.Create("capes/account_" + account.ID.String() + ".png")
+	file, err := os.Create("data/capes/account_" + account.ID.String() + ".png")
 	if err != nil {
 		core.JsonError(w, "Server error. Failed to create cape file. Please contact developers.")
 		return

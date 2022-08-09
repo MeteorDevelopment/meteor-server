@@ -32,7 +32,7 @@ func Cors(next http.Handler) http.Handler {
 }
 
 func Main() {
-	err := os.Mkdir("capes", fs.ModeDir)
+	err := os.Mkdir("data/capes", fs.ModeDir)
 	if err != nil && !os.IsExist(err) {
 		panic(err)
 	}

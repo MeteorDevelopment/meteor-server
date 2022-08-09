@@ -2,7 +2,7 @@ package api
 
 import (
 	"fmt"
-	"io/ioutil"
+	"log"
 	"meteor-server/pkg/core"
 	"meteor-server/pkg/db"
 	"net/http"
@@ -12,11 +12,10 @@ import (
 )
 
 func DownloadHandler(w http.ResponseWriter, r *http.Request) {
-	version := core.GetConfig().Version
 	devBuild := r.URL.Query().Get("devBuild")
 
 	if devBuild != "" {
-		version = core.GetConfig().DevBuildVersion
+		version := db.GetGlobal().DevBuildVersion
 
 		if devBuild == "latest" {
 			devBuild = db.GetGlobal().DevBuild
@@ -25,6 +24,7 @@ func DownloadHandler(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=meteor-client-%s-%s.jar", version, devBuild))
 		http.ServeFile(w, r, fmt.Sprintf("data/dev_builds/meteor-client-%s-%s.jar", version, devBuild))
 	} else {
+		version := core.GetConfig().Version
 		url := fmt.Sprintf("https://maven.meteordev.org/releases/meteordevelopment/meteor-client/%s/meteor-client-%s.jar", version, version)
 		http.Redirect(w, r, url, http.StatusPermanentRedirect)
 	}
@@ -46,14 +46,20 @@ func UploadDevBuildHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Save file
-	_ = os.Mkdir("dev_builds", 0755)
+	_ = os.Mkdir("data/dev_builds", 0755)
 
-	global := db.GetGlobal()
-	d, _ := strconv.Atoi(global.DevBuild)
-	global.DevBuild = strconv.Itoa(d + 1)
-	db.SetDevBuild(global.DevBuild)
+	devBuild := header.Filename[strings.LastIndex(header.Filename, "-")+1 : len(header.Filename)-4]
+	devBuildNum, _ := strconv.Atoi(devBuild)
+	devBuildVersion := header.Filename[strings.Index(header.Filename, ".")-1 : strings.LastIndex(header.Filename, "-")]
 
-	file, err := os.Create("dev_builds/meteor-client-" + core.GetConfig().DevBuildVersion + "-" + global.DevBuild + ".jar")
+	currDevBuild, _ := strconv.Atoi(db.GetGlobal().DevBuild)
+
+	if currDevBuild < devBuildNum {
+		db.SetDevBuild(devBuild)
+		db.SetDevBuildVersion(devBuildVersion)
+	}
+
+	file, err := os.Create("data/dev_builds/meteor-client-" + devBuildVersion + "-" + devBuild + ".jar")
 	if err != nil {
 		core.JsonError(w, "Server error. Failed to create file.")
 		return
@@ -62,7 +68,7 @@ func UploadDevBuildHandler(w http.ResponseWriter, r *http.Request) {
 	core.DownloadFile(formFile, file, w)
 
 	// Delete old file if needed
-	files, _ := ioutil.ReadDir("dev_builds")
+	files, _ := os.ReadDir("data/dev_builds")
 
 	if len(files) > core.GetConfig().MaxDevBuilds {
 		oldestBuild := 6666
@@ -79,13 +85,18 @@ func UploadDevBuildHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if oldest != "" {
-			_ = os.Remove("dev_builds/" + oldest)
+			_ = os.Remove("data/dev_builds/" + oldest)
 		}
 	}
 
 	// Response
 	core.Json(w, core.J{
-		"version": core.GetConfig().DevBuildVersion,
-		"number":  global.DevBuild,
+		"version": devBuildVersion,
+		"number":  devBuild,
 	})
+
+	err = formFile.Close()
+	if err != nil {
+		log.Println("Error closing input file from updateDevBuild")
+	}
 }
