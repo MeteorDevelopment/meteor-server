@@ -15,7 +15,7 @@ func DownloadHandler(w http.ResponseWriter, r *http.Request) {
 	devBuild := r.URL.Query().Get("devBuild")
 
 	if devBuild != "" {
-		version := db.GetGlobal().DevBuildVersion
+		version := core.GetConfig().DevBuildVersion
 
 		if devBuild == "latest" {
 			devBuild = db.GetGlobal().DevBuild
@@ -50,16 +50,14 @@ func UploadDevBuildHandler(w http.ResponseWriter, r *http.Request) {
 
 	devBuild := header.Filename[strings.LastIndex(header.Filename, "-")+1 : len(header.Filename)-4]
 	devBuildNum, _ := strconv.Atoi(devBuild)
-	devBuildVersion := header.Filename[strings.Index(header.Filename, ".")-1 : strings.LastIndex(header.Filename, "-")]
 
 	currDevBuild, _ := strconv.Atoi(db.GetGlobal().DevBuild)
 
 	if currDevBuild < devBuildNum {
 		db.SetDevBuild(devBuild)
-		db.SetDevBuildVersion(devBuildVersion)
 	}
 
-	file, err := os.Create("data/dev_builds/meteor-client-" + devBuildVersion + "-" + devBuild + ".jar")
+	file, err := os.Create("data/dev_builds/meteor-client-" + core.GetConfig().DevBuildVersion + "-" + devBuild + ".jar")
 	if err != nil {
 		core.JsonError(w, "Server error. Failed to create file.")
 		return
@@ -91,7 +89,7 @@ func UploadDevBuildHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Response
 	core.Json(w, core.J{
-		"version": devBuildVersion,
+		"version": core.GetConfig().DevBuildVersion,
 		"number":  devBuild,
 	})
 
