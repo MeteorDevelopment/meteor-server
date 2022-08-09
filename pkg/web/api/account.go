@@ -365,7 +365,7 @@ func UploadCapeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	cape := db.Cape{ID: "account_" + account.ID.String(), Url: "https://meteorclient.com/" + file.Name()}
+	cape := db.Cape{ID: "account_" + account.ID.String(), Url: "https://meteorclient.com/" + strings.TrimPrefix(file.Name(), "data/")}
 	db.InsertCape(cape)
 
 	UpdateCapes()

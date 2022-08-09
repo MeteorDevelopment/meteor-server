@@ -36,7 +36,3 @@ func GetGlobal() Global {
 func SetDevBuild(devBuild string) {
 	_, _ = global.UpdateOne(nil, bson.M{"id": "Stats"}, bson.M{"$set": bson.M{"devBuild": devBuild}})
 }
-
-func SetDevBuildVersion(version string) {
-	_, _ = global.UpdateOne(nil, bson.M{"id": "Stats"}, bson.M{"$set": bson.M{"devBuildVersion": version}})
-}
