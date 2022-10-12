@@ -7,6 +7,7 @@ import (
 	"meteor-server/pkg/auth"
 	"meteor-server/pkg/web/api"
 	"meteor-server/pkg/wormhole"
+	"mime"
 	"net/http"
 	"os"
 	"time"
@@ -32,7 +33,12 @@ func Cors(next http.Handler) http.Handler {
 }
 
 func Main() {
-	err := os.Mkdir("data/capes", fs.ModeDir)
+	err := mime.AddExtensionType(".jar", "application/java-archive")
+	if err != nil {
+		fmt.Printf("Failed to add a MIME type for .jar files: %s\n", err)
+	}
+
+	err = os.Mkdir("data/capes", fs.ModeDir)
 	if err != nil && !os.IsExist(err) {
 		panic(err)
 	}
