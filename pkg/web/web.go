@@ -45,6 +45,7 @@ func Main() {
 
 	api.UpdateCapes()
 	api.InitPayPal()
+	api.InitMetrics()
 
 	r := chi.NewRouter()
 
@@ -82,6 +83,7 @@ func Main() {
 
 		r.Get("/capes", api.CapesHandler)
 		r.Get("/stats", api.StatsHandler)
+		r.Get("/metrics", api.MetricsHandler)
 		r.Get("/capeowners", api.CapeOwnersHandler)
 
 		r.Post("/uploadDevBuild", auth.TokenAuth(api.UploadDevBuildHandler))
