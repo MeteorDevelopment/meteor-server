@@ -23,7 +23,7 @@ func StatsHandler(w http.ResponseWriter, r *http.Request) {
 	if date == "" {
 		g := db.GetGlobal()
 
-		core.Json(w, Stats{Config: core.GetConfig(), Date: core.GetDate(), DevBuild: g.DevBuild, Downloads: g.Downloads, OnlinePlayers: len(playing)})
+		core.Json(w, Stats{Config: core.GetConfig(), Date: core.GetDate(), DevBuild: g.DevBuild, Downloads: g.Downloads, OnlinePlayers: GetPlayingCount()})
 	} else {
 		stats, err := db.GetJoinStats(date)
 

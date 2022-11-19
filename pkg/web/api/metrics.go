@@ -24,7 +24,7 @@ func InitMetrics() {
 			Name: "meteor_online_players_total",
 			Help: "Total number of online players",
 		}, func() float64 {
-			return float64(len(playing))
+			return float64(GetPlayingCount())
 		}),
 	)
 
