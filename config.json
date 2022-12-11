@@ -4,7 +4,7 @@
   "version": "0.5.1",
   "dev_build_version": "0.5.2",
   "mc_version": "1.19.2",
-  "dev_build_mc_version": "1.19.2",
+  "dev_build_mc_version": "1.19.3",
   "max_dev_builds": 10,
   "changelog": [
     "Updated to 1.19.2",
