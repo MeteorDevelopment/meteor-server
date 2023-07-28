@@ -8,7 +8,6 @@ import (
 	_ "image/png"
 	"io/ioutil"
 	"meteor-server/pkg/discord"
-	"net"
 	"net/http"
 	"os"
 	"strings"
@@ -62,13 +61,7 @@ func SetupTurnstile() {
 }
 
 func RegisterHandler(w http.ResponseWriter, r *http.Request) {
-	ip, _, err := net.SplitHostPort(r.RemoteAddr)
-	if err != nil {
-		core.JsonError(w, "Unexpected error, please try again later.")
-		return
-	}
-
-	resp, err := ts.Verify(r.FormValue("cf-token"), ip)
+	resp, err := ts.Verify(r.FormValue("cf-token"), core.IP(r))
 	if err != nil || !resp.Success {
 		core.JsonError(w, "Failed to verify captcha, please try again.")
 		return
