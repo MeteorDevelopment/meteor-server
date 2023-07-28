@@ -10,6 +10,7 @@ require (
 	github.com/google/uuid v1.3.0
 	github.com/gorilla/websocket v1.4.2
 	github.com/joho/godotenv v1.4.0
+	github.com/meyskens/go-turnstile v0.0.0-20230622160222-89160e594ca1
 	github.com/plutov/paypal/v4 v4.6.1
 	github.com/prometheus/client_golang v1.14.0
 	github.com/segmentio/ksuid v1.0.4
@@ -28,7 +29,6 @@ require (
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/klauspost/compress v1.9.5 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.1 // indirect
-	github.com/meyskens/go-turnstile v0.0.0-20230622160222-89160e594ca1 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/prometheus/client_model v0.3.0 // indirect
 	github.com/prometheus/common v0.37.0 // indirect
