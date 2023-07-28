@@ -46,6 +46,7 @@ func Main() {
 	api.UpdateCapes()
 	api.InitPayPal()
 	api.InitMetrics()
+	api.SetupTurnstile()
 
 	r := chi.NewRouter()
 

@@ -3,10 +3,12 @@ package api
 import (
 	"bytes"
 	"encoding/json"
+	"github.com/meyskens/go-turnstile"
 	"image"
 	_ "image/png"
 	"io/ioutil"
 	"meteor-server/pkg/discord"
+	"net"
 	"net/http"
 	"os"
 	"strings"
@@ -53,10 +55,26 @@ var changeEmailTokens = make(map[ksuid.KSUID]passwordChangeInfo)
 var discordLinkTokens = make(map[ksuid.KSUID]accountTimeInfo)
 var forgotPasswordTokens = make(map[ksuid.KSUID]accountTimeInfo)
 
-func RegisterHandler(w http.ResponseWriter, r *http.Request) {
-	q := r.URL.Query()
+var ts *turnstile.Turnstile
 
-	err := auth.Register(q.Get("username"), q.Get("email"), q.Get("password"))
+func SetupTurnstile() {
+	ts = turnstile.New(core.GetPrivateConfig().CloudflareSecretKey)
+}
+
+func RegisterHandler(w http.ResponseWriter, r *http.Request) {
+	ip, _, err := net.SplitHostPort(r.RemoteAddr)
+	if err != nil {
+		core.JsonError(w, "Unexpected error, please try again later.")
+		return
+	}
+
+	resp, err := ts.Verify(r.FormValue("cf-token"), ip)
+	if err != nil || !resp.Success {
+		core.JsonError(w, "Failed to verify captcha, please try again.")
+		return
+	}
+
+	err = auth.Register(r.FormValue("username"), r.FormValue("email"), r.FormValue("password"))
 	if err != nil {
 		core.JsonError(w, err.Error())
 		return

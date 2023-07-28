@@ -20,13 +20,14 @@ type Config struct {
 }
 
 type PrivateConfig struct {
-	MongoDBUrl      string `env:"MONGO_URL"`
-	EmailPassword   string `env:"EMAIL_PSW"`
-	DiscordToken    string `env:"DISCORD_TOKEN"`
-	Token           string `env:"BACKEND_TOKEN"`
-	PayPalClientID  string `env:"PAYPAL_CID"`
-	PayPalSecret    string `env:"PAYPAL_SECRET"`
-	PayPalWebhookId string `env:"PAYPAL_WHID"`
+	MongoDBUrl          string `env:"MONGO_URL"`
+	EmailPassword       string `env:"EMAIL_PSW"`
+	DiscordToken        string `env:"DISCORD_TOKEN"`
+	Token               string `env:"BACKEND_TOKEN"`
+	PayPalClientID      string `env:"PAYPAL_CID"`
+	PayPalSecret        string `env:"PAYPAL_SECRET"`
+	PayPalWebhookId     string `env:"PAYPAL_WHID"`
+	CloudflareSecretKey string `env:"CLOUDFLARE_SECRET_KEY"`
 }
 
 var config Config
