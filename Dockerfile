@@ -12,4 +12,4 @@ WORKDIR /app
 COPY --from=build /app/meteor-server .
 COPY config.json .
 
-ENTRYPOINT [ "/app/meteor-client" ]
+ENTRYPOINT [ "/app/meteor-server" ]
