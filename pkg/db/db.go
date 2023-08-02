@@ -66,6 +66,8 @@ func Init() {
 	capes = db.Collection("capes", options.Collection())
 	joinStats = db.Collection("join-stats", options.Collection())
 	addons = db.Collection("addons", options.Collection())
+
+	initAccounts()
 }
 
 func Close() {

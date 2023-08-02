@@ -1,7 +1,9 @@
 package db
 
 import (
+	"context"
 	"errors"
+	"fmt"
 	"github.com/dboslee/lru"
 	"github.com/google/uuid"
 	"github.com/segmentio/ksuid"
@@ -11,6 +13,8 @@ import (
 	"meteor-server/pkg/core"
 	"meteor-server/pkg/discord"
 	"net/http"
+	"os"
+	"time"
 )
 
 type Account struct {
@@ -33,6 +37,19 @@ type Account struct {
 }
 
 var usernameCache = lru.NewSync[ksuid.KSUID, string](lru.WithCapacity(20))
+var donatorCount int
+
+func initAccounts() {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+
+	count, err := accounts.CountDocuments(ctx, bson.M{"donator": true})
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Failed to get the number of donators: %s\n", err)
+	}
+
+	donatorCount = int(count)
+}
 
 func NewAccount(username string, email string, password string) error {
 	pass, err := bcrypt.GenerateFromPassword([]byte(password), 10)
@@ -239,4 +256,12 @@ func (acc *Account) GiveDonator() {
 	discord.AddRole(acc.DiscordID, discord.DonorRole)
 	discord.AddRole(acc.DiscordID, discord.AccountRole)
 	discord.SendDonorMsg(acc.DiscordID)
+
+	if !acc.Donator {
+		donatorCount++
+	}
+}
+
+func GetDonatorCount() int {
+	return donatorCount
 }

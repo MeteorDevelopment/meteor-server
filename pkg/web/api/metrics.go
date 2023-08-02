@@ -26,6 +26,12 @@ func InitMetrics() {
 		}, func() float64 {
 			return float64(GetPlayingCount())
 		}),
+		promauto.NewCounterFunc(prometheus.CounterOpts{
+			Name: "meteor_donators_total",
+			Help: "Total number of accounts with donator status",
+		}, func() float64 {
+			return float64(db.GetDonatorCount())
+		}),
 	)
 
 	handler = promhttp.HandlerFor(reg, promhttp.HandlerOpts{})
