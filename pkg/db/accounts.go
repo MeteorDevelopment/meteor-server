@@ -13,7 +13,6 @@ import (
 	"meteor-server/pkg/core"
 	"meteor-server/pkg/discord"
 	"net/http"
-	"os"
 	"time"
 )
 
@@ -37,18 +36,27 @@ type Account struct {
 }
 
 var usernameCache = lru.NewSync[ksuid.KSUID, string](lru.WithCapacity(20))
-var donatorCount int
+
+var (
+	AccountCount int64
+	DonatorCount int64
+)
 
 func initAccounts() {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 
-	count, err := accounts.CountDocuments(ctx, bson.M{"donator": true})
+	var err error
+
+	AccountCount, err = accounts.CountDocuments(ctx, bson.M{})
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Failed to get the number of donators: %s\n", err)
+		fmt.Printf("Failed to get the number of accounts: %s\n", err)
 	}
 
-	donatorCount = int(count)
+	DonatorCount, err = accounts.CountDocuments(ctx, bson.M{"donator": true})
+	if err != nil {
+		fmt.Printf("Failed to get the number of donators: %s\n", err)
+	}
 }
 
 func NewAccount(username string, email string, password string) error {

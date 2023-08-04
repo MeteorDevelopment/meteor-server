@@ -88,6 +88,8 @@ func ConfirmEmailHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	db.AccountCount++
+
 	core.Json(w, core.J{})
 }
 

@@ -30,7 +30,13 @@ func InitMetrics() {
 			Name: "meteor_donators_total",
 			Help: "Total number of accounts with donator status",
 		}, func() float64 {
-			return float64(db.GetDonatorCount())
+			return float64(db.DonatorCount)
+		}),
+		promauto.NewCounterFunc(prometheus.CounterOpts{
+			Name: "meteor_accounts_total",
+			Help: "Total number of accounts",
+		}, func() float64 {
+			return float64(db.AccountCount)
 		}),
 	)
 
