@@ -94,5 +94,5 @@ func SendDonorMsg(user string) {
 }
 
 func SendDonationMessage(user string, amount float64) {
-	SendMessage(DonorChat, fmt.Sprintf("<@&%s> %s just donated %f!", DevRole, user, amount))
+	SendMessage(DonorChat, fmt.Sprintf("<@&%s> %s just donated €%.2f!", DevRole, user, amount))
 }
