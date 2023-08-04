@@ -11,15 +11,16 @@ import (
 	"strconv"
 )
 
-var client *paypal.Client
-var orders = make(map[string]ksuid.KSUID)
-
 type WebhookResponse struct {
 	Resource struct {
 		Id string `json:"id"`
 	} `json:"resource"`
 	EventType string `json:"event_type"`
 }
+
+var client *paypal.Client
+var orders = make(map[string]ksuid.KSUID)
+var amounts = make(map[string]float64)
 
 func InitPayPal() {
 	var err error
@@ -76,6 +77,8 @@ func CreateOrderHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	orders[order.ID] = user.ID
+	amounts[order.ID] = amount
+
 	core.Json(w, order)
 }
 
@@ -100,7 +103,7 @@ func ConfirmOrderHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	acc.GiveDonator()
+	acc.GiveDonator(amounts[res.Resource.Id])
 
 	core.Json(w, core.J{})
 }
@@ -110,6 +113,7 @@ func CancelOrderHandler(w http.ResponseWriter, r *http.Request) {
 
 	if id != "" {
 		delete(orders, id)
+		delete(amounts, id)
 		core.Json(w, core.J{})
 	} else {
 		core.JsonError(w, "No active orders.")

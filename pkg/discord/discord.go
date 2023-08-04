@@ -20,7 +20,6 @@ type member struct {
 
 const (
 	Guild       = "689197705683140636"
-	MutedRole   = "741016178155192432"
 	AccountRole = "777248653445300264"
 	DonorRole   = "689205464574984353"
 	DonorChat   = "713429344135020554"
@@ -46,6 +45,10 @@ func GetUser(id string) User {
 
 	_ = res.Body.Close()
 	return user
+}
+
+func IsMember(id string) bool {
+	return send("GET", "guilds/"+Guild+"/members/"+id).StatusCode == 200
 }
 
 func AddRole(user string, role string) {
@@ -87,5 +90,9 @@ func SendMessage(channel string, message string) {
 }
 
 func SendDonorMsg(user string) {
-	SendMessage(DonorChat, fmt.Sprintf("<@%s> thanks for donating to Meteor and supporting the <@&%s> team.", user, DevRole))
+	SendMessage(DonorChat, fmt.Sprintf("Hi <@%s>, welcome to the exclusive donator chat.\nHead over to <https://meteorclient.com/account> to see your new perks!", user))
+}
+
+func SendDonationMessage(user string, amount float64) {
+	SendMessage(DonorChat, fmt.Sprintf("<@&%s> %s just donated %f!", DevRole, user, amount))
 }

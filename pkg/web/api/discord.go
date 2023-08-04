@@ -7,20 +7,24 @@ import (
 )
 
 func DiscordUserJoinedHandler(_ http.ResponseWriter, r *http.Request) {
+	db.IncrementJoins()
+
 	id := r.URL.Query().Get("id")
-
-	if id != "" {
-		account, err := db.GetAccountDiscordId(id)
-		if err == nil {
-			discord.AddRole(account.DiscordID, discord.AccountRole)
-
-			if account.Donator {
-				discord.AddRole(account.DiscordID, discord.DonorRole)
-			}
-		}
+	if id == "" {
+		return
 	}
 
-	db.IncrementJoins()
+	account, err := db.GetAccountDiscordId(id)
+	if err != nil {
+		return
+	}
+
+	discord.AddRole(account.DiscordID, discord.AccountRole)
+
+	if account.Donator {
+		discord.AddRole(account.DiscordID, discord.DonorRole)
+		discord.SendDonorMsg(account.DiscordID)
+	}
 }
 
 func DiscordUserLeftHandler(_ http.ResponseWriter, _ *http.Request) {

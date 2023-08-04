@@ -180,18 +180,8 @@ func (acc *Account) LinkDiscord(id string) error {
 		return errors.New("Discord account already linked.")
 	}
 
-	// Don't allow muted people to bypass by linking
-	if discord.HasRole(id, discord.MutedRole) {
-		return errors.New("Cannot link that account because it is muted.")
-	}
-
 	// Put discord ID in database
 	_, _ = accounts.UpdateOne(nil, bson.M{"id": acc.ID}, bson.M{"$set": bson.M{"discord_id": id}})
-
-	// If the user has donator role but isn't a donator, remove it (shouldn't happen)
-	if !acc.Donator {
-		discord.RemoveRole(id, discord.DonorRole)
-	}
 
 	// If the account has donator but not donator role, give it
 	if acc.Donator {
@@ -258,18 +248,27 @@ func (acc *Account) SetCape(id string) {
 	_, _ = accounts.UpdateOne(nil, bson.M{"id": acc.ID}, bson.M{"$set": bson.M{"cape": id}})
 }
 
-func (acc *Account) GiveDonator() {
+func (acc *Account) GiveDonator(amount float64) {
+	isMember := discord.IsMember(acc.DiscordID)
+
+	username := acc.Username
+	if isMember {
+		username = fmt.Sprintf("<@%s>", acc.DiscordID)
+	}
+
+	discord.SendDonationMessage(username, amount)
+
+	if acc.Donator {
+		return
+	}
+
+	DonatorCount++
+
 	_, _ = accounts.UpdateOne(nil, bson.M{"id": acc.ID}, bson.M{"$set": bson.M{"donator": true, "can_have_custom_cape": true, "cape": "donator"}})
 
-	discord.AddRole(acc.DiscordID, discord.DonorRole)
-	discord.AddRole(acc.DiscordID, discord.AccountRole)
-	discord.SendDonorMsg(acc.DiscordID)
-
-	if !acc.Donator {
-		donatorCount++
+	if isMember {
+		discord.AddRole(acc.DiscordID, discord.AccountRole)
+		discord.AddRole(acc.DiscordID, discord.DonorRole)
+		discord.SendDonorMsg(acc.DiscordID)
 	}
-}
-
-func GetDonatorCount() int {
-	return donatorCount
 }
