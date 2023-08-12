@@ -2,8 +2,8 @@ package web
 
 import (
 	"fmt"
+	"github.com/rs/zerolog/log"
 	"io/fs"
-	"log"
 	"meteor-server/pkg/auth"
 	"meteor-server/pkg/web/api"
 	"meteor-server/pkg/wormhole"
@@ -35,7 +35,7 @@ func Cors(next http.Handler) http.Handler {
 func Main() {
 	err := mime.AddExtensionType(".jar", "application/java-archive")
 	if err != nil {
-		fmt.Printf("Failed to add a MIME type for .jar files: %s\n", err)
+		log.Err(err).Msg("Failed to add a MIME type for .jar files")
 	}
 
 	err = os.Mkdir("data/capes", fs.ModeDir)
@@ -150,6 +150,6 @@ func Main() {
 		IdleTimeout:  6 * time.Second,
 	}
 
-	fmt.Printf("Listening on %s\n", s.Addr)
-	log.Fatal(s.ListenAndServe())
+	log.Info().Msg("Listening on " + s.Addr)
+	log.Fatal().Err(s.ListenAndServe()).Send()
 }

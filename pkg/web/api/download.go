@@ -2,7 +2,7 @@ package api
 
 import (
 	"fmt"
-	"log"
+	"github.com/rs/zerolog/log"
 	"meteor-server/pkg/core"
 	"meteor-server/pkg/db"
 	"net/http"
@@ -95,6 +95,6 @@ func UploadDevBuildHandler(w http.ResponseWriter, r *http.Request) {
 
 	err = formFile.Close()
 	if err != nil {
-		log.Println("Error closing input file from updateDevBuild")
+		log.Error().Msg("Error closing input file from updateDevBuild")
 	}
 }

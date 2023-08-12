@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/plutov/paypal/v4"
+	"github.com/rs/zerolog/log"
 	"github.com/segmentio/ksuid"
 	"meteor-server/pkg/core"
 	"meteor-server/pkg/db"
@@ -26,13 +27,13 @@ func InitPayPal() {
 	var err error
 	client, err = paypal.NewClient(core.GetPrivateConfig().PayPalClientID, core.GetPrivateConfig().PayPalSecret, paypal.APIBaseLive)
 	if err != nil {
-		println("Failed to log in to paypal.")
+		log.Fatal().Err(err).Msg("Failed to log in to PayPal")
 		return
 	}
 
 	_, err = client.GetAccessToken(context.Background())
 	if err != nil {
-		println("Failed to generate PayPal access token.")
+		log.Fatal().Err(err).Msg("Failed to generate PayPal access token")
 	}
 }
 
@@ -71,8 +72,9 @@ func CreateOrderHandler(w http.ResponseWriter, r *http.Request) {
 	)
 
 	if err != nil {
-		core.JsonError(w, "Failed to create order.")
-		println(err)
+		msg := "Failed to create order"
+		core.JsonError(w, msg)
+		log.Err(err).Msg(msg)
 		return
 	}
 
@@ -85,21 +87,22 @@ func CreateOrderHandler(w http.ResponseWriter, r *http.Request) {
 func ConfirmOrderHandler(w http.ResponseWriter, r *http.Request) {
 	valid, err := client.VerifyWebhookSignature(r.Context(), r, core.GetPrivateConfig().PayPalWebhookId)
 	if err != nil || valid.VerificationStatus == "FAILURE" {
-		core.JsonError(w, "Could not validate webhook signature.")
-		println(err)
+		msg := "Could not validate webhook signature"
+		core.JsonError(w, msg)
+		log.Err(err).Msg(msg)
 		return
 	}
 
 	var res WebhookResponse
 	err = json.NewDecoder(r.Body).Decode(&res)
 	if err != nil {
-		println(err)
+		log.Err(err).Msg("Failed to decode request")
 		return
 	}
 
 	acc, err := db.GetAccountId(orders[res.Resource.Id])
 	if err != nil {
-		println(err)
+		log.Err(err).Msg("Failed to get account by ID")
 		return
 	}
 

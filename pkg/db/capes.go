@@ -1,8 +1,7 @@
 package db
 
 import (
-	"log"
-
+	"github.com/rs/zerolog/log"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -14,13 +13,13 @@ type Cape struct {
 func GetAllCapes() []Cape {
 	cursor, err := capes.Find(nil, bson.M{})
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal().Err(err).Send()
 	}
 
 	var c []Cape
 	err = cursor.All(nil, &c)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal().Err(err).Send()
 	}
 
 	return c

@@ -6,10 +6,10 @@ import (
 	"fmt"
 	"github.com/dboslee/lru"
 	"github.com/google/uuid"
+	"github.com/rs/zerolog/log"
 	"github.com/segmentio/ksuid"
 	"go.mongodb.org/mongo-driver/bson"
 	"golang.org/x/crypto/bcrypt"
-	"log"
 	"meteor-server/pkg/core"
 	"meteor-server/pkg/discord"
 	"net/http"
@@ -50,12 +50,12 @@ func initAccounts() {
 
 	AccountCount, err = accounts.CountDocuments(ctx, bson.M{})
 	if err != nil {
-		fmt.Printf("Failed to get the number of accounts: %s\n", err)
+		log.Err(err).Msg("Failed to get the number of accounts")
 	}
 
 	DonatorCount, err = accounts.CountDocuments(ctx, bson.M{"donator": true})
 	if err != nil {
-		fmt.Printf("Failed to get the number of donators: %s\n", err)
+		log.Err(err).Msg("Failed to get the number of donators")
 	}
 }
 
@@ -118,13 +118,13 @@ func GetAccountUuid(uuid uuid.UUID) (Account, error) {
 func GetAccountsWithCape() []Account {
 	cursor, err := accounts.Find(nil, bson.M{"cape": bson.M{"$ne": ""}})
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal().Err(err).Send()
 	}
 
 	var acc []Account
 	err = cursor.All(nil, &acc)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal().Err(err).Send()
 	}
 
 	return acc

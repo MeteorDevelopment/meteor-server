@@ -2,6 +2,7 @@ package core
 
 import (
 	"fmt"
+	"github.com/rs/zerolog/log"
 	"net/smtp"
 )
 
@@ -16,7 +17,6 @@ func SendEmail(to string, subject string, text string) {
 	err := smtp.SendMail("smtp.zoho.eu:587", emailAuth, "noreply@meteorclient.com", []string{to}, msg)
 
 	if err != nil {
-		fmt.Printf("[Email] Failed to send email to '%s'\n", to)
-		fmt.Printf("        %s\n", err)
+		log.Err(err).Str("to", to).Msg("Failed to send email")
 	}
 }

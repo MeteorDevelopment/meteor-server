@@ -1,9 +1,8 @@
 package db
 
 import (
-	"fmt"
+	"github.com/rs/zerolog/log"
 	"go.mongodb.org/mongo-driver/bson"
-	"os"
 	"time"
 )
 
@@ -26,7 +25,7 @@ func GetGlobal() Global {
 		lastTime = now
 
 		if err != nil {
-			_, _ = fmt.Fprintln(os.Stderr, "Failed to query global stats:", err)
+			log.Err(err).Msg("Failed to query global stats")
 		}
 	}
 

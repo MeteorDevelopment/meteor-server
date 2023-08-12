@@ -2,8 +2,8 @@ package core
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/gorilla/websocket"
+	"github.com/rs/zerolog/log"
 	"github.com/segmentio/ksuid"
 	"meteor-server/pkg/auth"
 	"meteor-server/pkg/db"
@@ -92,7 +92,7 @@ func (c *Client) onAuthenticate(data packets.AuthenticateC2S) {
 		c.Send(packets.NewAuthenticateS2C())
 
 		// Send join message to current clients
-		fmt.Printf("%s joined\n", c.Name)
+		log.Info().Msgf("%s joined", c.Name)
 		Broadcast(packets.NewJoinMessageS2C(c.Name))
 
 		AddClient(c)
@@ -109,7 +109,7 @@ func (c *Client) Close() {
 	if c.IsAuthenticated() {
 		RemoveClient(c)
 
-		fmt.Printf("%s left\n", c.Name)
+		log.Info().Msgf("%s left", c.Name)
 		Broadcast(packets.NewLeaveMessageS2C(c.Name))
 	}
 }

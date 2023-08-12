@@ -2,12 +2,12 @@ package db
 
 import (
 	"github.com/google/uuid"
+	"github.com/rs/zerolog/log"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/bsoncodec"
 	"go.mongodb.org/mongo-driver/bson/bsonrw"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"log"
 	"meteor-server/pkg/core"
 	"reflect"
 )
@@ -51,12 +51,12 @@ func Init() {
 	var err error
 	client, err = mongo.NewClient(options.Client().SetRegistry(registry).ApplyURI(core.GetPrivateConfig().MongoDBUrl))
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal().Err(err).Send()
 	}
 
 	err = client.Connect(nil)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal().Err(err).Send()
 	}
 
 	db = client.Database("meteor-bot", options.Database())

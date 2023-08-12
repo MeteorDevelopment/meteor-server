@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/rs/zerolog/log"
 	"io"
 	"mime/multipart"
 	"net"
@@ -132,7 +133,7 @@ func Json(w http.ResponseWriter, v interface{}) {
 
 	err := json.NewEncoder(w).Encode(v)
 	if err != nil {
-		_, _ = fmt.Fprint(os.Stderr, "Failed to encode json response: ", err.Error())
+		log.Err(err).Msg("Failed to encode response")
 		return
 	}
 }
@@ -143,7 +144,7 @@ func JsonError(w http.ResponseWriter, message interface{}) {
 
 	err := json.NewEncoder(w).Encode(J{"error": message})
 	if err != nil {
-		_, _ = fmt.Fprint(os.Stderr, "Failed to encode json error response: ", err.Error())
+		log.Err(err).Msg("Failed to encode response")
 		return
 	}
 }
@@ -154,7 +155,7 @@ func Unauthorized(w http.ResponseWriter) {
 
 	err := json.NewEncoder(w).Encode(J{"error": "Unauthorized."})
 	if err != nil {
-		_, _ = fmt.Fprint(os.Stderr, "Failed to encode json error response: ", err.Error())
+		log.Err(err).Msg("Failed to encode response")
 		return
 	}
 }

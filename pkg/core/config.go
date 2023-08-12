@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"github.com/caarlos0/env"
 	"github.com/joho/godotenv"
-	"log"
+	"github.com/rs/zerolog/log"
 	"os"
 )
 
@@ -37,25 +37,25 @@ func LoadConfig() {
 	// Config
 	f, err := os.ReadFile("config.json")
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal().Err(err).Send()
 	}
 
 	err = json.Unmarshal(f, &config)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal().Err(err).Send()
 	}
 
 	// Private config
 
 	err = godotenv.Load()
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal().Err(err).Send()
 	}
 
 	privateConfig = PrivateConfig{}
 	err = env.Parse(&privateConfig)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal().Err(err).Send()
 	}
 }
 
