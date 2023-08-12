@@ -130,7 +130,7 @@ func getAccountInfo(account db.Account) accountInfo {
 	if account.DiscordID != "" {
 		user := discord.GetUser(account.DiscordID)
 
-		info.DiscordName = user.Username + "#" + user.Discriminator
+		info.DiscordName = user.Username
 		info.DiscordAvatar = "https://cdn.discordapp.com/avatars/" + account.DiscordID + "/" + user.Avatar + ".jpg"
 	}
 
