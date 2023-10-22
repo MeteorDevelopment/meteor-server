@@ -54,7 +54,7 @@ func DownloadBaritoneHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get maven version
-	res, err := http.Get(fmt.Sprintf("https://maven.meteordev.org/snapshots/baritone/fabric/%s-SNAPSHOT/maven-metadata.xml", version))
+	res, err := http.Get(fmt.Sprintf("https://maven.meteordev.org/snapshots/meteordevelopment/baritone/%s-SNAPSHOT/maven-metadata.xml", version))
 	if err != nil {
 		core.JsonError(w, "Failed to get maven version.")
 		return
@@ -78,7 +78,7 @@ func DownloadBaritoneHandler(w http.ResponseWriter, r *http.Request) {
 	// Redirect
 	for _, snapshotVersion := range metadata.Versioning.SnapshotVersions.List {
 		if snapshotVersion.Extension == "jar" {
-			http.Redirect(w, r, fmt.Sprintf("https://maven.meteordev.org/snapshots/baritone/fabric/%s-SNAPSHOT/fabric-%s.jar", version, snapshotVersion.Value), http.StatusPermanentRedirect)
+			http.Redirect(w, r, fmt.Sprintf("https://maven.meteordev.org/snapshots/meteordevelopment/baritone/%s-SNAPSHOT/baritone-%s.jar", version, snapshotVersion.Value), http.StatusPermanentRedirect)
 			return
 		}
 	}
