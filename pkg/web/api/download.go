@@ -1,6 +1,7 @@
 package api
 
 import (
+	"encoding/xml"
 	"fmt"
 	"github.com/rs/zerolog/log"
 	"meteor-server/pkg/core"
@@ -10,6 +11,19 @@ import (
 	"strconv"
 	"strings"
 )
+
+type mavenMetadata struct {
+	Versioning struct {
+		SnapshotVersions struct {
+			List []mavenMetadataSnapshotVersion `xml:"snapshotVersion"`
+		} `xml:"snapshotVersions"`
+	} `xml:"versioning"`
+}
+
+type mavenMetadataSnapshotVersion struct {
+	Extension string `xml:"extension"`
+	Value     string `xml:"value"`
+}
 
 func DownloadHandler(w http.ResponseWriter, r *http.Request) {
 	devBuild := r.URL.Query().Get("devBuild")
@@ -30,6 +44,46 @@ func DownloadHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	db.IncrementDownloads()
+}
+
+func DownloadBaritoneHandler(w http.ResponseWriter, r *http.Request) {
+	version := r.URL.Query().Get("version")
+
+	if version == "" {
+		version = core.GetConfig().BaritoneMcVersion
+	}
+
+	// Get maven version
+	res, err := http.Get(fmt.Sprintf("https://maven.meteordev.org/snapshots/baritone/fabric/%s-SNAPSHOT/maven-metadata.xml", version))
+	if err != nil {
+		core.JsonError(w, "Failed to get maven version.")
+		return
+	}
+
+	//goland:noinspection GoUnhandledErrorResult
+	defer res.Body.Close()
+
+	if res.StatusCode != http.StatusOK {
+		core.JsonError(w, "Failed to get maven version.")
+		return
+	}
+
+	var metadata mavenMetadata
+	err = xml.NewDecoder(res.Body).Decode(&metadata)
+	if err != nil {
+		core.JsonError(w, "Failed to decode maven metadata.")
+		return
+	}
+
+	// Redirect
+	for _, snapshotVersion := range metadata.Versioning.SnapshotVersions.List {
+		if snapshotVersion.Extension == "jar" {
+			http.Redirect(w, r, fmt.Sprintf("https://maven.meteordev.org/snapshots/baritone/fabric/%s-SNAPSHOT/fabric-%s.jar", version, snapshotVersion.Value), http.StatusPermanentRedirect)
+			return
+		}
+	}
+
+	core.JsonError(w, "Failed to find jar file.")
 }
 
 func UploadDevBuildHandler(w http.ResponseWriter, r *http.Request) {

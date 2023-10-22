@@ -81,6 +81,7 @@ func Main() {
 	// /api
 	r.Route("/api", func(r chi.Router) {
 		r.Get("/download", api.DownloadHandler)
+		r.Get("/downloadBaritone", api.DownloadBaritoneHandler)
 
 		r.Get("/capes", api.CapesHandler)
 		r.Get("/stats", api.StatsHandler)
