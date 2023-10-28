@@ -321,7 +321,7 @@ func SelectCapeHandler(w http.ResponseWriter, r *http.Request) {
 
 	id := r.URL.Query().Get("cape")
 
-	if id == "" || (id == "donator" && account.Donator) || (id == "moderator" && account.Admin) || (strings.HasPrefix(id, "account_") && account.CanHaveCustomCape) {
+	if id == "" || (id == "donator" && account.Donator) || (id == "moderator" && account.Admin) || (id == "account_"+account.ID.String() && account.CanHaveCustomCape) {
 		account.SetCape(id)
 		UpdateCapes()
 
