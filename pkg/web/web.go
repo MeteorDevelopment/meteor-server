@@ -113,6 +113,8 @@ func Main() {
 			r.Get("/confirmChangeEmail", api.ConfirmChangeEmailHandlerApi)
 			r.Post("/changePassword", auth.Auth(api.ChangePasswordHandler))
 			r.Post("/changePasswordToken", api.ChangePasswordTokenHandler)
+			r.Post("/deleteAccount", auth.Auth(api.DeleteAccountHandler))
+			r.Get("/confirmDeleteAccount", api.ConfirmDeleteAccountHandler)
 		})
 
 		// /api/online
