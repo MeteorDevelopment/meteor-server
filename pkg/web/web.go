@@ -14,23 +14,10 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/cors"
 
 	"meteor-server/pkg/core"
 )
-
-func Cors(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Access-Control-Allow-Origin", "*")
-		w.Header().Set("Access-Control-Allow-Headers", "*")
-		w.Header().Set("Access-Control-Allow-Methods", "*")
-
-		if r.Method == http.MethodOptions {
-			w.WriteHeader(http.StatusOK)
-		} else {
-			next.ServeHTTP(w, r)
-		}
-	})
-}
 
 func Main() {
 	err := mime.AddExtensionType(".jar", "application/java-archive")
@@ -66,7 +53,7 @@ func Main() {
 		r.Use(middleware.Logger)
 	}
 
-	r.Use(Cors)
+	r.Use(cors.AllowAll().Handler)
 	r.Use(middleware.SetHeader("Connection", "close"))
 	r.Use(middleware.Recoverer)
 

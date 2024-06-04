@@ -7,6 +7,7 @@ require (
 	github.com/dboslee/lru v0.0.1
 	github.com/dvsekhvalnov/jose2go v1.5.0
 	github.com/go-chi/chi/v5 v5.0.5
+	github.com/go-chi/cors v1.2.1
 	github.com/google/uuid v1.3.0
 	github.com/gorilla/websocket v1.4.2
 	github.com/joho/godotenv v1.4.0
