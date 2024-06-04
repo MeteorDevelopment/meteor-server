@@ -53,6 +53,7 @@ func Main() {
 		r.Use(middleware.Logger)
 	}
 
+	r.Use(middleware.GetHead)
 	r.Use(cors.AllowAll().Handler)
 	r.Use(middleware.SetHeader("Connection", "close"))
 	r.Use(middleware.Recoverer)
