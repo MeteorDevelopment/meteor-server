@@ -5,7 +5,7 @@
   "dev_build_version": "0.5.8",
   "mc_version": "1.20.6",
   "dev_build_mc_version": "1.21",
-  "baritone_mc_version": "1.20.6",
+  "baritone_mc_version": "1.21",
   "max_dev_builds": 10,
   "changelog": [
     "Add Auto Wasp",
