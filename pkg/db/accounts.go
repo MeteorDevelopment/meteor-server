@@ -169,6 +169,19 @@ func GetAccountUsername(id ksuid.KSUID) (string, error) {
 	return account.Username, nil
 }
 
+func DeleteAccount(id ksuid.KSUID) error {
+	result, err := accounts.DeleteOne(nil, bson.M{"id": id})
+	if err != nil {
+		return err
+	}
+
+	if result.DeletedCount == 0 {
+		return errors.New("no account found with the provided ID")
+	}
+
+	return nil
+}
+
 func (acc *Account) PasswordMatches(password string) bool {
 	return bcrypt.CompareHashAndPassword(acc.Password, []byte(password)) == nil
 }
