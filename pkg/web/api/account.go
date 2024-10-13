@@ -257,41 +257,87 @@ func McAccountHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if r.Method == "POST" {
-		// Get Minecraft username
-		username := r.URL.Query().Get("username")
-		if username == "" {
-			core.JsonError(w, "Invalid username 1.")
-			return
-		}
+		code := r.URL.Query().Get("code")
 
-		// Get uuid
-		req, _ := http.NewRequest("GET", "https://api.mojang.com/users/profiles/minecraft/"+username, bytes.NewReader([]byte{}))
-		req.Header.Set("User-Agent", "Meteor Server")
+		if code != "" {
+			res, err := http.Get("mcauth:8080/retrieve/" + code)
+			if err != nil {
+				core.JsonError(w, "Failed to retrieve code's UUID")
+				return
+			}
 
-		client := http.Client{}
-		res, err := client.Do(req)
-		if err != nil {
-			core.JsonError(w, "Invalid username 2.")
-			return
-		}
+			//goland:noinspection GoUnhandledErrorResult
+			defer res.Body.Close()
 
-		body, _ := ioutil.ReadAll(res.Body)
-		var user mcUser
-		_ = json.Unmarshal(body, &user)
+			if res.StatusCode != http.StatusOK {
+				var data struct{ Error string }
 
-		_ = res.Body.Close()
+				err := json.NewDecoder(res.Body).Decode(&data)
+				if err != nil {
+					core.JsonError(w, "Failed to parse code's UUID Error")
+					return
+				}
 
-		id, err := uuid.Parse(user.Id)
-		if err != nil {
-			core.JsonError(w, "Invalid username 3. "+err.Error())
-			return
-		}
+				core.JsonError(w, data.Error)
+				return
+			}
 
-		// Add Minecraft account
-		err = account.AddMcAccount(id)
-		if err != nil {
-			core.JsonError(w, err.Error())
-			return
+			var data struct{ Uuid string }
+
+			err = json.NewDecoder(res.Body).Decode(&data)
+			if err != nil {
+				core.JsonError(w, "Failed to parse code's UUID")
+				return
+			}
+
+			id, err := uuid.Parse(data.Uuid)
+			if err != nil {
+				core.JsonError(w, "Invalid UUID")
+				return
+			}
+
+			err = account.AddMcAccount(id)
+			if err != nil {
+				core.JsonError(w, err.Error())
+				return
+			}
+		} else {
+			// Get Minecraft username
+			username := r.URL.Query().Get("username")
+			if username == "" {
+				core.JsonError(w, "Invalid username 1.")
+				return
+			}
+
+			// Get uuid
+			req, _ := http.NewRequest("GET", "https://api.mojang.com/users/profiles/minecraft/"+username, bytes.NewReader([]byte{}))
+			req.Header.Set("User-Agent", "Meteor Server")
+
+			client := http.Client{}
+			res, err := client.Do(req)
+			if err != nil {
+				core.JsonError(w, "Invalid username 2.")
+				return
+			}
+
+			body, _ := ioutil.ReadAll(res.Body)
+			var user mcUser
+			_ = json.Unmarshal(body, &user)
+
+			_ = res.Body.Close()
+
+			id, err := uuid.Parse(user.Id)
+			if err != nil {
+				core.JsonError(w, "Invalid username 3. "+err.Error())
+				return
+			}
+
+			// Add Minecraft account
+			err = account.AddMcAccount(id)
+			if err != nil {
+				core.JsonError(w, err.Error())
+				return
+			}
 		}
 
 		UpdateCapes()
