@@ -260,7 +260,7 @@ func McAccountHandler(w http.ResponseWriter, r *http.Request) {
 		code := r.URL.Query().Get("code")
 
 		if code != "" {
-			res, err := http.Get("mcauth:8080/retrieve/" + code)
+			res, err := http.Get("http://mcauth:8080/retrieve/" + code)
 			if err != nil {
 				core.JsonError(w, "Failed to retrieve code's UUID. "+err.Error())
 				return
