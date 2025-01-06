@@ -4,8 +4,8 @@
   "version": "0.5.9",
   "dev_build_version": "0.6.0",
   "mc_version": "1.21.3",
-  "dev_build_mc_version": "1.21.3",
-  "baritone_mc_version": "1.21.3",
+  "dev_build_mc_version": "1.21.4",
+  "baritone_mc_version": "1.21.4",
   "max_dev_builds": 10,
   "changelog": [
     "Minecraft 1.21.3",
