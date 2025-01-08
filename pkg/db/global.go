@@ -7,11 +7,9 @@ import (
 )
 
 type Global struct {
-	Downloads       int    `bson:"downloads"`
-	TotalAccounts   int    `bson:"totalAccounts"`
-	SupportMessage  int64  `bson:"supportMessage"`
-	DevBuild        string `bson:"devBuild"`
-	DevBuildVersion string `bson:"devBuildVersion"`
+	Downloads      int   `bson:"downloads"`
+	TotalAccounts  int   `bson:"totalAccounts"`
+	SupportMessage int64 `bson:"supportMessage"`
 }
 
 var cache Global
@@ -30,8 +28,4 @@ func GetGlobal() Global {
 	}
 
 	return cache
-}
-
-func SetDevBuild(devBuild string) {
-	_, _ = global.UpdateOne(nil, bson.M{"id": "Stats"}, bson.M{"$set": bson.M{"devBuild": devBuild}})
 }

@@ -9,15 +9,9 @@ import (
 )
 
 type Config struct {
-	Port              int      `json:"port"`
-	Debug             bool     `json:"debug"`
-	Version           string   `json:"version"`
-	DevBuildVersion   string   `json:"dev_build_version"`
-	McVersion         string   `json:"mc_version"`
-	DevBuildMcVersion string   `json:"dev_build_mc_version"`
-	BaritoneMcVersion string   `json:"baritone_mc_version"`
-	MaxDevBuilds      int      `json:"max_dev_builds"`
-	Changelog         []string `json:"changelog"`
+	Port              int    `json:"port"`
+	Debug             bool   `json:"debug"`
+	BaritoneMcVersion string `json:"baritone_mc_version"`
 }
 
 type PrivateConfig struct {
