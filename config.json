@@ -1,18 +1,5 @@
 {
   "port": 3001,
   "debug": false,
-  "version": "0.5.9",
-  "dev_build_version": "0.6.0",
-  "mc_version": "1.21.3",
-  "dev_build_mc_version": "1.21.4",
-  "baritone_mc_version": "1.21.4",
-  "max_dev_builds": 10,
-  "changelog": [
-    "Minecraft 1.21.3",
-    "Small refactor of some Better Tooltips settings",
-    "Refactor Sprint",
-    "Add Hide Hud to Zoom",
-    "Add Hide Buttons to Auto Reconnect",
-    "Bunch of fixes all around"
-  ]
+  "baritone_mc_version": "1.21.4"
 }

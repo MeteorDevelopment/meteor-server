@@ -78,7 +78,6 @@ func Main() {
 		r.Get("/metrics", api.MetricsHandler)
 		r.Get("/capeowners", api.CapeOwnersHandler)
 
-		r.Post("/uploadDevBuild", auth.TokenAuth(api.UploadDevBuildHandler))
 		r.Post("/recheckMaven", auth.TokenAuth(api.RecheckMavenHandler))
 
 		// /api/account

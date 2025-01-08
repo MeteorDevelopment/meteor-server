@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"encoding/xml"
 	"errors"
+	"golang.org/x/mod/semver"
 	"io"
 	"meteor-server/pkg/core"
 	"meteor-server/pkg/db"
@@ -31,7 +32,7 @@ type Stats struct {
 var builds map[string]int
 
 func InitStats() {
-	t := time.NewTicker(time.Minute)
+	t := time.NewTicker(10 * time.Minute)
 
 	go func() {
 		for {
@@ -72,6 +73,28 @@ func RecheckMavenHandler(w http.ResponseWriter, _ *http.Request) {
 	builds = getBuildNumbers()
 
 	core.Json(w, struct{}{})
+}
+
+func GetLatestVersion() (string, int) {
+	latest := "0.0.0"
+	build := 0
+
+	for version, number := range builds {
+		if semver.Compare("v"+version, "v"+latest) == 1 {
+			latest = version
+			build = number
+		}
+	}
+
+	return latest, build
+}
+
+func GetVersionBuild(version string) int {
+	if build, ok := builds[version]; ok {
+		return build
+	}
+
+	return 0
 }
 
 // Maven

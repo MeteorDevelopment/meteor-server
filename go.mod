@@ -19,6 +19,7 @@ require (
 	go.mongodb.org/mongo-driver v1.5.1
 	golang.org/x/crypto v0.1.0
 	golang.org/x/exp v0.0.0-20220713135740-79cabaa25d75
+	golang.org/x/mod v0.6.0-dev.0.20220419223038-86c51ed26bb4
 )
 
 require (

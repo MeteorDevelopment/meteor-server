@@ -3,16 +3,15 @@ package api
 import (
 	"encoding/xml"
 	"fmt"
-	"github.com/rs/zerolog/log"
+	"io"
 	"meteor-server/pkg/core"
 	"meteor-server/pkg/db"
 	"net/http"
-	"os"
-	"strconv"
-	"strings"
 )
 
 type mavenMetadata struct {
+	ArtifactId string `xml:"artifactId"`
+
 	Versioning struct {
 		SnapshotVersions struct {
 			List []mavenMetadataSnapshotVersion `xml:"snapshotVersion"`
@@ -26,22 +25,18 @@ type mavenMetadataSnapshotVersion struct {
 }
 
 func DownloadHandler(w http.ResponseWriter, r *http.Request) {
-	devBuild := r.URL.Query().Get("devBuild")
+	version, build := GetLatestVersion()
 
-	if devBuild != "" {
-		version := core.GetConfig().DevBuildVersion
-
-		if devBuild == "latest" {
-			devBuild = db.GetGlobal().DevBuild
-		}
-
-		w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=meteor-client-%s-%s.jar", version, devBuild))
-		http.ServeFile(w, r, fmt.Sprintf("data/dev_builds/meteor-client-%s-%s.jar", version, devBuild))
-	} else {
-		version := core.GetConfig().Version
-		url := fmt.Sprintf("https://maven.meteordev.org/releases/meteordevelopment/meteor-client/%s/meteor-client-%s.jar", version, version)
-		http.Redirect(w, r, url, http.StatusPermanentRedirect)
+	if v := r.URL.Query().Get("version"); v != "" {
+		version = v
+		build = GetVersionBuild(v)
 	}
+
+	downloadFromMaven(
+		w, r,
+		"https://maven.meteordev.org/snapshots/meteordevelopment/meteor-client/"+version+"-SNAPSHOT",
+		fmt.Sprintf("meteor-client-%s-%d.jar", version, build),
+	)
 
 	db.IncrementDownloads()
 }
@@ -53,8 +48,16 @@ func DownloadBaritoneHandler(w http.ResponseWriter, r *http.Request) {
 		version = core.GetConfig().BaritoneMcVersion
 	}
 
+	downloadFromMaven(
+		w, r,
+		"https://maven.meteordev.org/snapshots/meteordevelopment/baritone/"+version+"-SNAPSHOT",
+		fmt.Sprintf("baritone-meteor-%s.jar", version),
+	)
+}
+
+func downloadFromMaven(w http.ResponseWriter, r *http.Request, url string, filename string) {
 	// Get maven version
-	res, err := http.Get(fmt.Sprintf("https://maven.meteordev.org/snapshots/meteordevelopment/baritone/%s-SNAPSHOT/maven-metadata.xml", version))
+	res, err := http.Get(url + "/maven-metadata.xml")
 	if err != nil {
 		core.JsonError(w, "Failed to get maven version.")
 		return
@@ -75,80 +78,33 @@ func DownloadBaritoneHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Redirect
+	// Get file url
+	fileUrl := ""
+
 	for _, snapshotVersion := range metadata.Versioning.SnapshotVersions.List {
 		if snapshotVersion.Extension == "jar" {
-			http.Redirect(w, r, fmt.Sprintf("https://maven.meteordev.org/snapshots/meteordevelopment/baritone/%s-SNAPSHOT/baritone-%s.jar", version, snapshotVersion.Value), http.StatusPermanentRedirect)
-			return
+			fileUrl = fmt.Sprintf("%s/%s-%s.jar", url, metadata.ArtifactId, snapshotVersion.Value)
+			break
 		}
 	}
 
-	core.JsonError(w, "Failed to find jar file.")
-}
+	if fileUrl == "" {
+		core.JsonError(w, "Failed to find jar file.")
+	}
 
-func UploadDevBuildHandler(w http.ResponseWriter, r *http.Request) {
-	// Validate file
-	formFile, header, err := r.FormFile("file")
+	// Server file
+	res, err = http.Get(fileUrl)
 	if err != nil {
-		core.JsonError(w, "Invalid file.")
+		core.JsonError(w, "Failed to get file from maven.")
 		return
 	}
 
-	if !strings.HasSuffix(header.Filename, ".jar") {
-		core.JsonError(w, "File needs to be a JAR.")
-		return
-	}
+	//goland:noinspection GoUnhandledErrorResult
+	defer res.Body.Close()
 
-	// Save file
-	_ = os.Mkdir("data/dev_builds", 0755)
+	w.Header().Set("Content-Disposition", "attachment; filename="+filename)
+	w.Header().Set("Content-Type", res.Header.Get("Content-Type"))
+	w.Header().Set("Content-Length", res.Header.Get("Content-Length"))
 
-	devBuild := header.Filename[strings.LastIndex(header.Filename, "-")+1 : len(header.Filename)-4]
-	devBuildNum, _ := strconv.Atoi(devBuild)
-
-	currDevBuild, _ := strconv.Atoi(db.GetGlobal().DevBuild)
-
-	if currDevBuild < devBuildNum {
-		db.SetDevBuild(devBuild)
-	}
-
-	file, err := os.Create("data/dev_builds/meteor-client-" + core.GetConfig().DevBuildVersion + "-" + devBuild + ".jar")
-	if err != nil {
-		core.JsonError(w, "Server error. Failed to create file.")
-		return
-	}
-
-	core.DownloadFile(formFile, file, w)
-
-	// Delete old file if needed
-	files, _ := os.ReadDir("data/dev_builds")
-
-	if len(files) > core.GetConfig().MaxDevBuilds {
-		oldestBuild := 6666
-		oldest := ""
-
-		for _, file := range files {
-			s := strings.TrimSuffix(file.Name(), ".jar")
-			build, _ := strconv.Atoi(s[strings.LastIndex(s, "-")+1:])
-
-			if build < oldestBuild {
-				oldestBuild = build
-				oldest = file.Name()
-			}
-		}
-
-		if oldest != "" {
-			_ = os.Remove("data/dev_builds/" + oldest)
-		}
-	}
-
-	// Response
-	core.Json(w, core.J{
-		"version": core.GetConfig().DevBuildVersion,
-		"number":  devBuild,
-	})
-
-	err = formFile.Close()
-	if err != nil {
-		log.Error().Msg("Error closing input file from updateDevBuild")
-	}
+	_, _ = io.Copy(w, res.Body)
 }
