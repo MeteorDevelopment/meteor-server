@@ -51,6 +51,7 @@ type accountTimeInfo struct {
 var changeEmailTokens = make(map[ksuid.KSUID]passwordChangeInfo)
 var discordLinkTokens = make(map[ksuid.KSUID]accountTimeInfo)
 var forgotPasswordTokens = make(map[ksuid.KSUID]accountTimeInfo)
+var deleteAccountTokens = make(map[ksuid.KSUID]accountTimeInfo)
 
 var ts *turnstile.Turnstile
 
@@ -629,5 +630,52 @@ func ForgotPasswordHandler(w http.ResponseWriter, r *http.Request) {
 	forgotPasswordTokens[token] = accountTimeInfo{account.ID, time.Now()}
 
 	core.SendEmail(email, "Forgot password", "To change the password to "+email+" go to https://meteorclient.com/changePassword?token="+token.String()+" . The link is valid for 15 minutes.")
+	core.Json(w, core.J{})
+}
+
+func DeleteAccountHandler(w http.ResponseWriter, r *http.Request) {
+	// Get account
+	account, err := db.GetAccount(r)
+	if err != nil {
+		core.JsonError(w, "Could not get account.")
+		return
+	}
+
+	token := ksuid.New()
+	deleteAccountTokens[token] = accountTimeInfo{account.ID, time.Now()}
+
+	core.SendEmail(account.Email, "Confirm account deletion", "To delete your account go to https://meteorclient.com/confirmDeleteAccount?token="+token.String()+" . The link is valid for 15 minutes.")
+	core.Json(w, core.J{})
+}
+
+func ConfirmDeleteAccountHandler(w http.ResponseWriter, r *http.Request) {
+	// Validate token
+	tokenStr := r.URL.Query().Get("token")
+
+	token, err := ksuid.Parse(tokenStr)
+	if err != nil {
+		core.JsonError(w, "Invalid token.")
+		return
+	}
+
+	info, exists := deleteAccountTokens[token]
+	if !exists {
+		core.JsonError(w, "Invalid token.")
+		return
+	}
+
+	delete(deleteAccountTokens, token)
+
+	if time.Now().Sub(info.time).Minutes() > 15 {
+		core.JsonError(w, "Invalid token.")
+		return
+	}
+
+	err = db.DeleteAccount(info.accountId)
+	if err != nil {
+		core.JsonError(w, err.Error())
+		return
+	}
+
 	core.Json(w, core.J{})
 }
