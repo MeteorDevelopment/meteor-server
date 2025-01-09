@@ -25,6 +25,9 @@ type Stats struct {
 	OnlinePlayers int    `json:"onlinePlayers"`
 
 	Builds map[string]int `json:"builds"`
+
+	// For compatibility with old Meteor versions that check this field without a safety check
+	Version string `json:"version"`
 }
 
 var builds map[string]int
@@ -53,6 +56,7 @@ func StatsHandler(w http.ResponseWriter, r *http.Request) {
 			Downloads:     g.Downloads,
 			OnlinePlayers: GetPlayingCount(),
 			Builds:        builds,
+			Version:       "0.0.0",
 		})
 	} else {
 		stats, err := db.GetJoinStats(date)
