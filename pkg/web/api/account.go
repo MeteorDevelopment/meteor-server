@@ -576,24 +576,24 @@ func ChangePasswordTokenHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	delete(forgotPasswordTokens, token)
 	if time.Now().Sub(info.time).Minutes() > 15 {
-
+		delete(forgotPasswordTokens, token)
 		core.JsonError(w, "Outdated token.")
+		return
+	}
+
+	// Validate new password, the token stays valid so the user can try again
+	newPass := r.FormValue("new")
+	if err := auth.ValidatePassword(newPass); err != nil {
+		core.JsonError(w, err.Error())
 		return
 	}
 
 	// Get account
 	account, err := db.GetAccountId(info.accountId)
 	if err != nil {
+		delete(forgotPasswordTokens, token)
 		core.JsonError(w, "Invalid token.")
-		return
-	}
-
-	// Validate new password
-	newPass := r.FormValue("new")
-	if err := auth.ValidatePassword(newPass); err != nil {
-		core.JsonError(w, err.Error())
 		return
 	}
 
@@ -603,6 +603,8 @@ func ChangePasswordTokenHandler(w http.ResponseWriter, r *http.Request) {
 		core.JsonError(w, "Invalid password.")
 		return
 	}
+
+	delete(forgotPasswordTokens, token)
 
 	// Invalidate tokens
 	auth.Invalidate(account.ID)
