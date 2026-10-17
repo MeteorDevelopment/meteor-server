@@ -92,9 +92,7 @@ func ConfirmEmailHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
-	q := r.URL.Query()
-
-	token, err := auth.Login(q.Get("name"), q.Get("password"))
+	token, err := auth.Login(r.FormValue("name"), r.FormValue("password"))
 	if err != nil {
 		core.JsonError(w, "Wrong name or password.")
 		return
@@ -403,7 +401,7 @@ func ChangeUsernameHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Validate username
-	username := r.URL.Query().Get("username")
+	username := r.FormValue("username")
 	if username == "" || strings.ContainsRune(username, ' ') {
 		core.JsonError(w, "Invalid username.")
 		return
@@ -429,7 +427,7 @@ func ChangeEmailHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Validate email
-	email := r.URL.Query().Get("email")
+	email := r.FormValue("email")
 
 	if !core.IsEmailValid(email) {
 		core.JsonError(w, "Invalid email.")
@@ -537,14 +535,14 @@ func ChangePasswordHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Validate old password
-	oldPass := r.URL.Query().Get("old")
+	oldPass := r.FormValue("old")
 	if !account.PasswordMatches(oldPass) {
 		core.JsonError(w, "Wrong old password.")
 		return
 	}
 
 	// Validate new password
-	newPass := r.URL.Query().Get("new")
+	newPass := r.FormValue("new")
 	if newPass == "" || strings.ContainsRune(newPass, ' ') {
 		core.JsonError(w, "Invalid new password.")
 		return
@@ -565,7 +563,7 @@ func ChangePasswordHandler(w http.ResponseWriter, r *http.Request) {
 
 func ChangePasswordTokenHandler(w http.ResponseWriter, r *http.Request) {
 	// Validate token
-	tokenRaw := r.URL.Query().Get("token")
+	tokenRaw := r.FormValue("token")
 	token, err := ksuid.Parse(tokenRaw)
 	if err != nil {
 		core.JsonError(w, "Invalid token.")
@@ -593,7 +591,7 @@ func ChangePasswordTokenHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Validate new password
-	newPass := r.URL.Query().Get("new")
+	newPass := r.FormValue("new")
 	if newPass == "" || strings.ContainsRune(newPass, ' ') {
 		core.JsonError(w, "Invalid new password.")
 		return
@@ -613,7 +611,7 @@ func ChangePasswordTokenHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func ForgotPasswordHandler(w http.ResponseWriter, r *http.Request) {
-	email := r.URL.Query().Get("email")
+	email := r.FormValue("email")
 	if email == "" {
 		core.JsonError(w, "Invalid email.")
 		return

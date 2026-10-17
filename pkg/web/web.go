@@ -85,6 +85,7 @@ func Main() {
 			r.Post("/register", api.RegisterHandler)
 			r.Post("/confirm", api.ConfirmEmailHandler)
 			r.Get("/login", api.LoginHandler)
+			r.Post("/login", api.LoginHandler)
 			r.Post("/forgotPassword", api.ForgotPasswordHandler)
 			r.Post("/logout", auth.Auth(api.LogoutHandler))
 
