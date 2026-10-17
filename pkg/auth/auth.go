@@ -1,10 +1,10 @@
 package auth
 
 import (
+	"crypto/rand"
 	"encoding/json"
 	"errors"
 	"golang.org/x/exp/slices"
-	"math/rand"
 	"strings"
 	"sync"
 	"time"
@@ -39,7 +39,6 @@ var cetMu = sync.RWMutex{}
 
 func Init() {
 	jwtKey = make([]byte, 36)
-	rand.Seed(time.Now().UnixNano())
 	rand.Read(jwtKey)
 }
 
