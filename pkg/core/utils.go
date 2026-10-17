@@ -110,7 +110,7 @@ func GetAccountID(r *http.Request) ksuid.KSUID {
 
 func IsEmailValid(email string) bool {
 	length := len(email)
-	if length < 3 && length > 254 {
+	if length < 3 || length > 254 {
 		return false
 	}
 
@@ -118,13 +118,25 @@ func IsEmailValid(email string) bool {
 		return false
 	}
 
-	parts := strings.Split(email, "@")
-	mx, err := net.LookupMX(parts[1])
-	if err != nil || len(mx) == 0 {
-		return false
+	return domainAcceptsMail(email[strings.LastIndex(email, "@")+1:])
+}
+
+// Only rejects domains that definitely can't receive mail, a lookup that fails for any other reason doesn't make the email invalid
+func domainAcceptsMail(domain string) bool {
+	mx, err := net.LookupMX(domain)
+	if err == nil && len(mx) > 0 {
+		// A single "." record means the domain explicitly doesn't accept mail
+		return !(len(mx) == 1 && mx[0].Host == ".")
 	}
 
-	return true
+	// Without MX records mail is delivered to the domain's own address
+	_, err = net.LookupHost(domain)
+	if err == nil {
+		return true
+	}
+
+	var dnsErr *net.DNSError
+	return !(errors.As(err, &dnsErr) && dnsErr.IsNotFound)
 }
 
 func Json(w http.ResponseWriter, v interface{}) {
