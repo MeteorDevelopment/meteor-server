@@ -427,7 +427,7 @@ func ChangeEmailHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Validate email
-	email := r.FormValue("email")
+	email := strings.ToLower(r.FormValue("email"))
 
 	if !core.IsEmailValid(email) {
 		core.JsonError(w, "Invalid email.")

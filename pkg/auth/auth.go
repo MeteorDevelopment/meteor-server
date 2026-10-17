@@ -43,6 +43,8 @@ func Init() {
 }
 
 func Register(username string, email string, password string) error {
+	email = strings.ToLower(email)
+
 	if username == "" || strings.ContainsRune(username, ' ') || email == "" || strings.ContainsRune(email, ' ') {
 		return errors.New("Invalid username or email.")
 	}

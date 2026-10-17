@@ -9,6 +9,7 @@ import (
 	"github.com/rs/zerolog/log"
 	"github.com/segmentio/ksuid"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"golang.org/x/crypto/bcrypt"
 	"meteor-server/pkg/core"
 	"meteor-server/pkg/discord"
@@ -139,7 +140,9 @@ func GetAccountWithUsername(username string) (Account, error) {
 
 func GetAccountWithEmail(email string) (Account, error) {
 	var acc Account
-	err := accounts.FindOne(nil, bson.M{"email": email}).Decode(&acc)
+	// Case insensitive so accounts saved before emails were lowercased are still found
+	opts := options.FindOne().SetCollation(&options.Collation{Locale: "en", Strength: 2})
+	err := accounts.FindOne(nil, bson.M{"email": email}, opts).Decode(&acc)
 
 	return acc, err
 }
