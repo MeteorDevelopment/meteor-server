@@ -43,8 +43,12 @@ func Init() {
 }
 
 func Register(username string, email string, password string) error {
-	if username == "" || strings.ContainsRune(username, ' ') || email == "" || strings.ContainsRune(email, ' ') || password == "" || strings.ContainsRune(password, ' ') {
-		return errors.New("Invalid username, email or password.")
+	if username == "" || strings.ContainsRune(username, ' ') || email == "" || strings.ContainsRune(email, ' ') {
+		return errors.New("Invalid username or email.")
+	}
+
+	if err := ValidatePassword(password); err != nil {
+		return err
 	}
 
 	if !core.IsEmailValid(email) {
@@ -69,6 +73,19 @@ func Register(username string, email string, password string) error {
 	cetMu.Unlock()
 
 	core.SendEmail(email, "Confirm email to register", "To complete the registration go to https://meteorclient.com/confirm?token="+token.String()+" . The link is valid for 15 minutes.")
+	return nil
+}
+
+// ValidatePassword checks the length in bytes, bcrypt can't hash passwords longer than 72 bytes
+func ValidatePassword(password string) error {
+	if len(password) < 8 {
+		return errors.New("Password must be at least 8 characters long.")
+	}
+
+	if len(password) > 72 {
+		return errors.New("Password can't be longer than 72 characters.")
+	}
+
 	return nil
 }
 

@@ -543,8 +543,8 @@ func ChangePasswordHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Validate new password
 	newPass := r.FormValue("new")
-	if newPass == "" || strings.ContainsRune(newPass, ' ') {
-		core.JsonError(w, "Invalid new password.")
+	if err := auth.ValidatePassword(newPass); err != nil {
+		core.JsonError(w, err.Error())
 		return
 	}
 
@@ -592,8 +592,8 @@ func ChangePasswordTokenHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Validate new password
 	newPass := r.FormValue("new")
-	if newPass == "" || strings.ContainsRune(newPass, ' ') {
-		core.JsonError(w, "Invalid new password.")
+	if err := auth.ValidatePassword(newPass); err != nil {
+		core.JsonError(w, err.Error())
 		return
 	}
 
